@@ -1,0 +1,12 @@
+{
+  "arrowParens": "avoid",
+  "bracketSpacing": true,
+  "cursorOffset": -1,
+  "endOfLine": "auto",
+  "jsxBracketSameLine": false,
+  "jsxSingleQuote": false,
+  "parser": "typescript",
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all"
+}

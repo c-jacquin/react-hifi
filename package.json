@@ -19,7 +19,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.tsx' 'test/**/*.tsx'",
     "prebuild": "rimraf dist",
     "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src",
     "start": "rollup -c rollup.config.ts -w",
@@ -31,55 +31,12 @@
     "commit": "git-cz",
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
-    "precommit": "lint-staged",
     "travis-deploy-once": "travis-deploy-once"
-  },
-  "lint-staged": {
-    "{src,test}/**/*.ts": [
-      "prettier --write",
-      "git add"
-    ]
   },
   "config": {
     "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
     }
-  },
-  "jest": {
-    "transform": {
-      ".(ts|tsx)": "ts-jest"
-    },
-    "testEnvironment": "node",
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/test/"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 90,
-        "functions": 95,
-        "lines": 95,
-        "statements": 95
-      }
-    },
-    "collectCoverageFrom": [
-      "src/*.{js,ts}"
-    ]
-  },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true
-  },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^7.1.2",
