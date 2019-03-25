@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 enum SoundStatus {
   PAUSED,
@@ -20,10 +20,10 @@ interface SoundProps {
   onLoad: (event: any) => void;
   position: number;
   volume: number;
-  equalizer: Record<string, number>;
+  equalizer?: Record<string, number>;
 }
 
-class Sound extends React.PureComponent<SoundProps> {
+class Sound extends React.Component<SoundProps> {
   audio: HTMLAudioElement;
   audioContext: AudioContext;
   gainNode: GainNode;
@@ -49,34 +49,37 @@ class Sound extends React.PureComponent<SoundProps> {
 
   createFilterNodes() {
     let lastInChain = this.gainNode;
-    this.qValues = Object.keys(this.props.equalizer).map((freq, i, arr) => {
-      if (!i || i === arr.length - 1) {
-        return null;
-      } else {
-        return (2 * Number(freq)) / Math.abs(Number(arr[i + 1]) - Number(arr[i - 1]));
-      }
-    });
 
-    Object.keys(this.props.equalizer).forEach((freq, i, arr) => {
-      const biquadFilter = this.audioContext.createBiquadFilter();
+    if (this.props.equalizer) {
+      this.qValues = Object.keys(this.props.equalizer).map((freq, i, arr) => {
+        if (!i || i === arr.length - 1) {
+          return null;
+        } else {
+          return (2 * Number(freq)) / Math.abs(Number(arr[i + 1]) - Number(arr[i - 1]));
+        }
+      });
 
-      biquadFilter.type = 'peaking';
-      biquadFilter.frequency.value = Number(freq);
-      biquadFilter.gain.value = this.props.equalizer[freq] || 0;
-      if (!i || i === arr.length - 1) {
-        biquadFilter.type = i ? 'highshelf' : 'lowshelf';
-      } else {
-        biquadFilter.Q.value = this.qValues[i] as number;
-      }
+      Object.keys(this.props.equalizer).forEach((freq, i, arr) => {
+        const biquadFilter = this.audioContext.createBiquadFilter();
 
-      if (lastInChain) {
-        lastInChain.connect(biquadFilter);
-      }
+        biquadFilter.type = 'peaking';
+        biquadFilter.frequency.value = Number(freq);
+        biquadFilter.gain.value = this.props.equalizer![freq] || 0;
+        if (!i || i === arr.length - 1) {
+          biquadFilter.type = i ? 'highshelf' : 'lowshelf';
+        } else {
+          biquadFilter.Q.value = this.qValues[i] as number;
+        }
 
-      lastInChain = biquadFilter;
+        if (lastInChain) {
+          lastInChain.connect(biquadFilter);
+        }
 
-      this.filters.push(biquadFilter);
-    });
+        lastInChain = biquadFilter;
+
+        this.filters.push(biquadFilter);
+      });
+    }
 
     return lastInChain;
   }
@@ -130,15 +133,17 @@ class Sound extends React.PureComponent<SoundProps> {
       this.setPlayerState();
     }
 
-    if (
-      !(
-        Object.entries(this.props.equalizer).toString() ===
-        Object.entries(prevProps.equalizer).toString()
-      )
-    ) {
-      Object.values(this.props.equalizer).forEach((value, idx) => {
-        this.filters[idx].gain.value = value;
-      });
+    if (this.props.equalizer && prevProps.equalizer) {
+      if (
+        !(
+          Object.entries(this.props.equalizer).toString() ===
+          Object.entries(prevProps.equalizer).toString()
+        )
+      ) {
+        Object.values(this.props.equalizer).forEach((value, idx) => {
+          this.filters[idx].gain.value = value;
+        });
+      }
     }
   }
 
@@ -148,11 +153,7 @@ class Sound extends React.PureComponent<SoundProps> {
     this.source = this.audioContext.createMediaElementSource(this.audio);
 
     this.source.connect(this.gainNode);
-    if (this.props.equalizer) {
-      this.createFilterNodes().connect(this.audioContext.destination);
-    } else {
-      this.gainNode.connect(this.audioContext.destination);
-    }
+    this.createFilterNodes().connect(this.audioContext.destination);
 
     this.setVolume();
     this.setPlayerState();
