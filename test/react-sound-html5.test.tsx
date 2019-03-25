@@ -2,9 +2,6 @@
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
 import Sound from '../src/react-sound-html5';
-import { JSDOM } from 'jsdom';
-
-const { document } = new JSDOM(`<!DOCTYPE html><p>TEST</p>`).window;
 
 const noop = () => {};
 
@@ -27,7 +24,10 @@ describe('Sound Component test', () => {
       {
         createNodeMock: (element) => {
           if (element.type === 'audio') {
-            return document.createElement('audio');
+            return {
+              pause() {},
+              play: () => {}
+            }
           }
           return null;
         }

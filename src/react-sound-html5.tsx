@@ -1,9 +1,9 @@
 import React from 'react';
 
 enum SoundStatus {
-  PAUSED,
-  PLAYING,
-  STOPPED,
+  PAUSED = 'PAUSED',
+  PLAYING = 'PLAYING',
+  STOPPED = 'STOPPED',
 }
 
 type OnPlayingArgs = {
