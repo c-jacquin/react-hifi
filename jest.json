@@ -1,6 +1,7 @@
 {
   "transform": {
-    ".(ts|tsx)": "ts-jest"
+    ".(js|jsx)": "<rootDir>/node_modules/babel-jest",
+    ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
   },
   "testEnvironment": "node",
   "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
@@ -23,5 +24,8 @@
   },
   "collectCoverageFrom": [
     "src/*.{js,ts}"
+  ],
+  "setupFilesAfterEnv": [
+    "./test/mock/audio-api.ts"
   ]
 }
