@@ -4,7 +4,7 @@
 import { Sound } from './index.tsx';
 
 <Sound
-  url={'/demo.mp3'}
+  url="demo.mp3"
   playStatus={Sound.status.PLAYING}
   onFinishedPlaying={console.log}
   onLoad={console.log}
