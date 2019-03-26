@@ -13,7 +13,7 @@ type OnPlayingArgs = {
 
 interface SoundProps {
   url: string;
-  playStatus: SoundStatus;
+  playStatus: string;
   onPlaying: (args: OnPlayingArgs) => void;
   onFinishedPlaying: (event: any) => void;
   onLoading: (event: any) => void;
@@ -22,8 +22,8 @@ interface SoundProps {
   volume: number;
   equalizer?: Record<string, number>;
 }
-
-class Sound extends React.Component<SoundProps> {
+/** @component */
+export class Sound extends React.Component<SoundProps> {
   audio: HTMLAudioElement;
   audioContext: AudioContext;
   gainNode: GainNode;
@@ -162,7 +162,7 @@ class Sound extends React.Component<SoundProps> {
   render() {
     return (
       <audio
-        autoPlay
+        crossOrigin="anonymous"
         style={{ visibility: 'hidden' }}
         src={this.props.url}
         ref={this.attachRef}
@@ -174,5 +174,3 @@ class Sound extends React.Component<SoundProps> {
     );
   }
 }
-
-export default Sound;

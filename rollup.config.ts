@@ -10,7 +10,7 @@ const pkg = require('./package.json')
 const libraryName = 'react-sound-html5'
 
 export default {
-  input: `src/${libraryName}.tsx`,
+  input: 'src/index.ts',
   output: [
     { file: pkg.main, name: camelCase(libraryName), format: 'umd', sourcemap: true },
     { file: pkg.module, format: 'es', sourcemap: true },

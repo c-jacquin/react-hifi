@@ -1,7 +1,7 @@
 /* tslint:disable:no-empty */
 import React from 'react';
 import TestRenderer from 'react-test-renderer';
-import Sound from '../src/react-sound-html5';
+import Sound from '../src';
 
 const noop = () => {};
 
