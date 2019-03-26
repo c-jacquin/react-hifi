@@ -1,8 +1,13 @@
 {
   "name": "react-sound-html5",
-  "version": "0.0.0",
+  "version": "0.0.0-development",
   "description": "",
-  "keywords": ["audio", "react-sound", "html5", "nuclear"],
+  "keywords": [
+    "audio",
+    "react-sound",
+    "html5",
+    "nuclear"
+  ],
   "main": "dist/react-sound-html5.umd.js",
   "module": "dist/react-sound-html5.es5.js",
   "typings": "dist/types/react-sound-html5.d.ts",
@@ -12,7 +17,7 @@
   "author": "Charles Jacquin <charles.jacquin@autistici.org>",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/charjac/react-sound-html5.git"
   },
   "license": "MIT",
   "engines": {
@@ -30,7 +35,6 @@
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "commit": "git-cz",
     "semantic-release": "semantic-release",
-    "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
     "travis-deploy-once": "travis-deploy-once"
   },
   "peerDependencies": {
@@ -41,7 +45,7 @@
     "@commitlint/config-conventional": "^7.5.0",
     "@types/jest": "^24.0.11",
     "@types/jsdom": "^12.2.3",
-    "@types/node": "^11.11.6",
+    "@types/node": "^11.11.7",
     "@types/react": "^16.8.8",
     "@types/react-test-renderer": "^16.8.1",
     "awesome-typescript-loader": "^5.2.1",
