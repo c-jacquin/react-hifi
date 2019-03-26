@@ -97,7 +97,8 @@ export class Sound extends React.Component<SoundProps> {
         this.audio.pause();
         break;
       case Sound.status.PLAYING:
-        this.audio.play();
+        this.audio.play()
+          .catch(console.error);
         break;
       case Sound.status.STOPPED:
         this.audio.pause();
