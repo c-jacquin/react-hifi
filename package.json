@@ -10,7 +10,7 @@
   ],
   "main": "dist/react-sound-html5.umd.js",
   "module": "dist/react-sound-html5.es5.js",
-  "typings": "dist/types/react-sound-html5.d.ts",
+  "typings": "dist/types/index.d.ts",
   "files": [
     "dist"
   ],
