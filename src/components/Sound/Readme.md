@@ -64,7 +64,7 @@ const Player = () => {
           <VerticalSlider
             key={freq}
             value={state.eq[freq]}
-            onChange={evt => setState({ ...state, eq: { ...state.eq, freq: evt.target.value } })}
+            onChange={evt => setState({ ...state, eq: { ...state.eq, [freq]: evt.target.value } })}
           />
         ))}
       </div>
