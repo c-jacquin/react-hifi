@@ -21,6 +21,7 @@ interface SoundProps {
   position: number;
   volume: number;
   equalizer?: Record<string, number>;
+  preAmp?: number;
 }
 /** @component */
 export class Sound extends React.Component<SoundProps> {
@@ -49,9 +50,10 @@ export class Sound extends React.Component<SoundProps> {
 
   createFilterNodes() {
     let lastInChain = this.gainNode;
+    const { equalizer, preAmp = 0 } = this.props;
 
-    if (this.props.equalizer) {
-      this.qValues = Object.keys(this.props.equalizer).map((freq, i, arr) => {
+    if (equalizer) {
+      this.qValues = Object.keys(equalizer).map((freq, i, arr) => {
         if (!i || i === arr.length - 1) {
           return null;
         } else {
@@ -59,12 +61,12 @@ export class Sound extends React.Component<SoundProps> {
         }
       });
 
-      Object.keys(this.props.equalizer).forEach((freq, i, arr) => {
+      Object.keys(equalizer).forEach((freq, i, arr) => {
         const biquadFilter = this.audioContext.createBiquadFilter();
 
         biquadFilter.type = 'peaking';
         biquadFilter.frequency.value = Number(freq);
-        biquadFilter.gain.value = this.props.equalizer![freq] || 0;
+        biquadFilter.gain.value = (equalizer[freq] + preAmp) || 0;
         if (!i || i === arr.length - 1) {
           biquadFilter.type = i ? 'highshelf' : 'lowshelf';
         } else {
@@ -142,7 +144,7 @@ export class Sound extends React.Component<SoundProps> {
         )
       ) {
         Object.values(this.props.equalizer).forEach((value, idx) => {
-          this.filters[idx].gain.value = value;
+          this.filters[idx].gain.value = value + (this.props.preAmp || 0);
         });
       }
     }
