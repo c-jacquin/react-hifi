@@ -22,10 +22,7 @@ module.exports = {
           loaders: [
             {
               loader: 'awesome-typescript-loader'
-            },
-            {
-              loader: 'react-docgen-typescript-loader'
-            },
+            }
           ]
         },
       ],
