@@ -27,6 +27,10 @@ class AudioContextMock {
   createMediaElementSource() {
     return new AudioNodeMock();
   }
+
+  createAnalyser() {
+    return new AudioNodeMock();
+  }
 }
 
 (global as any).AudioContext = AudioContextMock;

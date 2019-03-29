@@ -28,16 +28,20 @@ const CANVAS_HEIGHT = 400;
 
 const VerticalSlider = ({
   value,
-  onChange
+  onChange,
+  style,
+  preAmp = 0
 }) => (
   <input
     type="range"
     orient="vertical"
-    min="-10"
-    max="10"
-    value={value}
+    min={Number(preAmp) - 12}
+    max={Number(preAmp) + 12}
+    step="1"
+    value={Number(value) + Number(preAmp)}
     onChange={onChange}
     style={{
+      ...style,
       WebkitAppearance: 'slider-vertical',
       width: '8px',
       height: '175px',
@@ -51,7 +55,8 @@ const Player = () => {
     status: Sound.status.PAUSED,
     position: 0,
     duration: 0,
-    volume: 10
+    volume: 100,
+    preAmp: 0
   });
   const [eq, setEq] = useState({
     '60': 0,
@@ -74,10 +79,16 @@ const Player = () => {
     <div>
       <div>
         <p>Equalizer</p>
+        <VerticalSlider
+          value={state.preAmp}
+          onChange={evt => setState({ ...state, preAmp: evt.target.value })}
+          style={{ marginRight: '40px' }}
+        />
         {Object.keys(eq).map(freq => (
           <VerticalSlider
             key={freq}
             value={eq[freq]}
+            preAmp={state.preAmp}
             onChange={evt => setEq({ ...eq, [freq]: Number(evt.target.value) })}
           />
         ))}
@@ -123,7 +134,6 @@ const Player = () => {
         onLoading={console.log}
         onPlaying={data => setState({ ...state, ...data  })}
         onVisualizationChange={data => {
-          console.log(data)
           if (canvas.current) {
             if (!canvasContext) {
               canvasContext = canvas.current.getContext('2d');
@@ -136,8 +146,8 @@ const Player = () => {
             let barPositionY;
             let barPositionX = 0;
 
-            for(let i = 0; i < data.length; i++) {
-              barHeight = data[i] * 4;
+            for (let i = 0; i < data.length; i++) {
+              barHeight = data[i] * 2;
               barPositionY = CANVAS_HEIGHT - barHeight / 2;
 
               canvasContext.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
@@ -150,6 +160,7 @@ const Player = () => {
         position={state.position}
         volume={state.volume}
         equalizer={eq}
+        preAmp={0}
       />
     </div>
   );

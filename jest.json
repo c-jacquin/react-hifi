@@ -26,6 +26,7 @@
     "src/*.{js,ts}"
   ],
   "setupFilesAfterEnv": [
+    "./test/mock/raf.ts",
     "./test/mock/audio-api.ts"
   ]
 }

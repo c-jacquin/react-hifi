@@ -71,7 +71,8 @@ export class Sound extends React.Component<SoundProps> {
 
         biquadFilter.type = 'peaking';
         biquadFilter.frequency.value = Number(freq);
-        biquadFilter.gain.value = (equalizer[freq] + preAmp) || 0;
+        biquadFilter.gain.value = equalizer[freq] + preAmp;
+
         if (!i || i === arr.length - 1) {
           biquadFilter.type = i ? 'highshelf' : 'lowshelf';
         } else {
@@ -136,8 +137,14 @@ export class Sound extends React.Component<SoundProps> {
         cancelAnimationFrame(this.animationFrame);
         break;
       case Sound.status.PLAYING:
-        this.audio.play()
-          .then(() => !!this.props.onVisualizationChange && this.handleVisualizationChange())
+        this.audio
+          .play()
+          .then(
+            () =>
+              !!this.props.onVisualizationChange &&
+              !!this.props.equalizer &&
+              this.handleVisualizationChange(),
+          )
           .catch(console.error);
         break;
       case Sound.status.STOPPED:
