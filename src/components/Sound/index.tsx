@@ -170,7 +170,14 @@ export class Sound extends React.Component<SoundProps> {
   }
 
   componentDidUpdate(prevProps: SoundProps) {
-    if (this.props.volume !== prevProps.volume) {
+    const {
+      volume,
+      playStatus,
+      equalizer,
+      preAmp = 0
+    } = this.props;
+
+    if (volume !== prevProps.volume) {
       this.setVolume();
     }
 
@@ -178,19 +185,20 @@ export class Sound extends React.Component<SoundProps> {
       this.setPosition();
     }
 
-    if (this.props.playStatus !== prevProps.playStatus) {
+    if (playStatus !== prevProps.playStatus) {
       this.setPlayerState();
     }
 
-    if (this.props.equalizer && prevProps.equalizer) {
+    if (equalizer && prevProps.equalizer) {
       if (
         !(
-          Object.entries(this.props.equalizer).toString() ===
+          Object.entries(equalizer).toString() ===
           Object.entries(prevProps.equalizer).toString()
-        )
+        ) ||
+        (preAmp !== prevProps.preAmp)
       ) {
-        Object.values(this.props.equalizer).forEach((value, idx) => {
-          this.filters[idx].gain.value = value + (this.props.preAmp || 0);
+        Object.values(equalizer).forEach((value, idx) => {
+          this.filters[idx].gain.value = value + preAmp;
         });
       }
     }

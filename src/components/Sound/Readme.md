@@ -29,16 +29,15 @@ const CANVAS_HEIGHT = 400;
 const VerticalSlider = ({
   value,
   onChange,
-  style,
-  preAmp = 0
+  style
 }) => (
   <input
     type="range"
     orient="vertical"
-    min={Number(preAmp) - 12}
-    max={Number(preAmp) + 12}
+    min={-12}
+    max={12}
     step="1"
-    value={Number(value) + Number(preAmp)}
+    value={Number(value)}
     onChange={onChange}
     style={{
       ...style,
@@ -81,14 +80,13 @@ const Player = () => {
         <p>Equalizer</p>
         <VerticalSlider
           value={state.preAmp}
-          onChange={evt => setState({ ...state, preAmp: evt.target.value })}
+          onChange={evt => setState({ ...state, preAmp: Number(evt.target.value) })}
           style={{ marginRight: '40px' }}
         />
         {Object.keys(eq).map(freq => (
           <VerticalSlider
             key={freq}
             value={eq[freq]}
-            preAmp={state.preAmp}
             onChange={evt => setEq({ ...eq, [freq]: Number(evt.target.value) })}
           />
         ))}
@@ -127,7 +125,7 @@ const Player = () => {
         ref={canvas}
       />
       <Sound
-        url="demo.mp3"
+        url="http://localhost:8080/demo.mp3"
         playStatus={state.status}
         onFinishedPlaying={console.log}
         onLoad={console.log}
@@ -160,7 +158,7 @@ const Player = () => {
         position={state.position}
         volume={state.volume}
         equalizer={eq}
-        preAmp={0}
+        preAmp={state.preAmp}
       />
     </div>
   );
