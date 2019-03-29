@@ -190,7 +190,7 @@ export class Sound extends React.Component<SoundProps> {
         )
       ) {
         Object.values(this.props.equalizer).forEach((value, idx) => {
-          this.filters[idx].gain.value = value + (this.props.preAmp || 0);
+          this.filters[idx].gain.value = value - (this.props.preAmp || 0);
         });
       }
     }
