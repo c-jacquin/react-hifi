@@ -127,7 +127,7 @@ const Player = () => {
         ref={canvas}
       />
       <Sound
-        url="http://localhost:8080/demo.mp3"
+        url="demo.mp3"
         playStatus={state.status}
         onFinishedPlaying={console.log}
         onLoad={console.log}
