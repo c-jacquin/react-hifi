@@ -14,15 +14,17 @@ type OnPlayingArgs = {
 interface SoundProps {
   url: string;
   playStatus: string;
-  onPlaying: (args: OnPlayingArgs) => void;
-  onFinishedPlaying: (event: any) => void;
-  onLoading: (event: any) => void;
-  onLoad: (event: any) => void;
   position: number;
   volume: number;
+  onPlaying: (args: OnPlayingArgs) => void;
+  onFinishedPlaying?: (event: any) => void;
+  onLoading?: (event: any) => void;
+  onLoad?: (event: any) => void;
+  onVisualizationChange?: (data: number[]) => void;
   equalizer?: Record<string, number>;
   preAmp?: number;
 }
+
 /** @component */
 export class Sound extends React.Component<SoundProps> {
   audio: HTMLAudioElement;
@@ -30,13 +32,17 @@ export class Sound extends React.Component<SoundProps> {
   gainNode: GainNode;
   source: MediaElementAudioSourceNode;
   filters: BiquadFilterNode[] = [];
+  analyser: AnalyserNode;
   qValues: Array<number | null>;
+  frequencyData: Uint8Array;
+  animationFrame: number;
 
   static status = SoundStatus;
 
   constructor(props: SoundProps) {
     super(props);
 
+    this.handleVisualizationChange = this.handleVisualizationChange.bind(this);
     this.handleTimeUpdate = this.handleTimeUpdate.bind(this);
     this.attachRef = this.attachRef.bind(this);
   }
@@ -44,7 +50,6 @@ export class Sound extends React.Component<SoundProps> {
   attachRef(element: HTMLAudioElement) {
     if (element) {
       this.audio = element;
-      this.audio.crossOrigin = 'anonymous';
     }
   }
 
@@ -86,6 +91,37 @@ export class Sound extends React.Component<SoundProps> {
     return lastInChain;
   }
 
+  formatDataVizByFrequency(data: Uint8Array) {
+    const { equalizer } = this.props;
+    const values = [];
+    let currentIndex = 0;
+    const HERTZ_ITER = 23.4;
+
+    if (equalizer) {
+      const frequencies = Object.keys(equalizer).map(Number);
+      for (let i = 0; i <= frequencies[frequencies.length - 1] + HERTZ_ITER; i = i + HERTZ_ITER) {
+        const freq = frequencies[currentIndex];
+
+        if (i > freq && i < freq + HERTZ_ITER) {
+          currentIndex++;
+
+          values.push(data[Math.round(i / HERTZ_ITER)]);
+        }
+      }
+    }
+
+    return values;
+  }
+
+  handleVisualizationChange() {
+    this.animationFrame = requestAnimationFrame(this.handleVisualizationChange);
+    this.analyser.getByteFrequencyData(this.frequencyData);
+
+    if (this.props.onVisualizationChange) {
+      this.props.onVisualizationChange(this.formatDataVizByFrequency(this.frequencyData));
+    }
+  }
+
   handleTimeUpdate({ target }: any) {
     this.props.onPlaying({
       position: target.currentTime,
@@ -97,14 +133,17 @@ export class Sound extends React.Component<SoundProps> {
     switch (this.props.playStatus) {
       case Sound.status.PAUSED:
         this.audio.pause();
+        cancelAnimationFrame(this.animationFrame);
         break;
       case Sound.status.PLAYING:
         this.audio.play()
+          .then(() => !!this.props.onVisualizationChange && this.handleVisualizationChange())
           .catch(console.error);
         break;
       case Sound.status.STOPPED:
         this.audio.pause();
         this.audio.currentTime = 0;
+        cancelAnimationFrame(this.animationFrame);
         break;
     }
   }
@@ -154,9 +193,13 @@ export class Sound extends React.Component<SoundProps> {
     this.audioContext = new AudioContext();
     this.gainNode = this.audioContext.createGain();
     this.source = this.audioContext.createMediaElementSource(this.audio);
+    this.analyser = this.audioContext.createAnalyser();
+    this.analyser.fftSize = 32768;
+    this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
 
     this.source.connect(this.gainNode);
-    this.createFilterNodes().connect(this.audioContext.destination);
+    this.createFilterNodes().connect(this.analyser);
+    this.analyser.connect(this.audioContext.destination);
 
     this.setVolume();
     this.setPlayerState();

@@ -23,6 +23,9 @@ import { Sound } from './index.tsx';
 import React, { useState } from 'react';
 import { Sound } from './index.tsx';
 
+const CANVAS_WIDTH = 500;
+const CANVAS_HEIGHT = 400;
+
 const VerticalSlider = ({
   value,
   onChange
@@ -51,10 +54,21 @@ const Player = () => {
     volume: 10
   });
   const [eq, setEq] = useState({
-    '50': 0,
-    '5000': 0,
-    '15000': 0
+    '60': 0,
+    '170': 0,
+    '310': 0,
+    '600': 0,
+    '1000': 0,
+    '3000': 0,
+    '6000': 0,
+    '12000': 0,
+    '14000': 0,
+    '16000': 0
+
   });
+
+  const canvas = React.createRef();
+  let canvasContext;
 
   return (
     <div>
@@ -96,13 +110,43 @@ const Player = () => {
           onChange={evt => setState({ ...state, position: Number(evt.target.value) })}
         />
       </div>
+      <canvas
+        width={CANVAS_WIDTH}
+        height={CANVAS_HEIGHT}
+        ref={canvas}
+      />
       <Sound
-        url="demo.mp3"
+        url="http://localhost:8080/demo.mp3"
         playStatus={state.status}
         onFinishedPlaying={console.log}
         onLoad={console.log}
         onLoading={console.log}
         onPlaying={data => setState({ ...state, ...data  })}
+        onVisualizationChange={data => {
+          console.log(data)
+          if (canvas.current) {
+            if (!canvasContext) {
+              canvasContext = canvas.current.getContext('2d');
+              canvasContext.fillStyle = 'rgb(0, 0, 0)';
+              canvasContext.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+            }
+
+            const barWidth = (CANVAS_WIDTH / data.length);
+            let barHeight;
+            let barPositionY;
+            let barPositionX = 0;
+
+            for(let i = 0; i < data.length; i++) {
+              barHeight = data[i] * 4;
+              barPositionY = CANVAS_HEIGHT - barHeight / 2;
+
+              canvasContext.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+              canvasContext.fillRect(barPositionX, barPositionY, barWidth, barHeight);
+
+              barPositionX += barWidth + 1;
+            }
+          }
+        }}
         position={state.position}
         volume={state.volume}
         equalizer={eq}
