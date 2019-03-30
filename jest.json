@@ -23,7 +23,7 @@
     }
   },
   "collectCoverageFrom": [
-    "src/*.{js,ts}"
+    "src/**/*.{js,ts,tsx}"
   ],
   "setupFilesAfterEnv": [
     "./test/mock/raf.ts",

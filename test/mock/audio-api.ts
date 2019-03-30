@@ -17,6 +17,12 @@ class AudioNodeMock {
   }
 }
 
+class Analyser extends AudioNodeMock {
+  getByteFrequencyData(foo: Uint8Array) {
+    foo = new Uint8Array(10);
+  }
+}
+
 class AudioContextMock {
   createBiquadFilter() {
     return new AudioNodeMock();
@@ -31,7 +37,7 @@ class AudioContextMock {
   }
 
   createAnalyser() {
-    return new AudioNodeMock();
+    return new Analyser();
   }
 }
 

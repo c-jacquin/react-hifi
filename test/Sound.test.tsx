@@ -24,151 +24,55 @@ const options = {
  * Sound test
  */
 describe('Sound Component', () => {
-  it('should render', () => {
+  test('should render', () => {
     const testRenderer = TestRenderer.create(
       <Sound
         url="http://foo.ogg"
         playStatus={Sound.status.PAUSED}
-        onFinishedPlaying={noop}
-        onLoad={noop}
-        onLoading={noop}
-        onPlaying={noop}
-        position={5}
-        volume={1}
       />,
       options,
     );
     expect(testRenderer).toBeDefined();
   });
 
-  describe('filters', () => {
-    it('should properly set biQuadFilterValue', () => {
-      const testRenderer = TestRenderer.create(
-        <Sound
-          url="http://foo.ogg"
-          playStatus={Sound.status.PAUSED}
-          onFinishedPlaying={noop}
-          onLoad={noop}
-          onLoading={noop}
-          onPlaying={noop}
-          position={5}
-          volume={1}
-          equalizer={{ 40: 4 }}
-        />,
-        options,
-      );
-
-      const instance = testRenderer.getInstance();
-      expect((instance as any).filters[0].frequency.value).toEqual(40);
-      expect((instance as any).filters[0].gain.value).toEqual(4);
-    });
-
-    it('should add preAmp prop to the biquadFilter value if specified', () => {
-      const testRenderer = TestRenderer.create(
-        <Sound
-          url="http://foo.ogg"
-          playStatus={Sound.status.PAUSED}
-          onFinishedPlaying={noop}
-          onLoad={noop}
-          onLoading={noop}
-          onPlaying={noop}
-          position={5}
-          volume={1}
-          equalizer={{ 40: 4, 50: 10 }}
-          preAmp={10}
-        />,
-        options,
-      );
-
-      const instance = testRenderer.getInstance();
-      expect((instance as any).filters[0].gain.value).toEqual(14);
-      expect((instance as any).filters[1].gain.value).toEqual(20);
-    });
-
-    it('filters should have the correct type according to their position in the array of filters', () => {
-      const testRenderer = TestRenderer.create(
-        <Sound
-          url="http://foo.ogg"
-          playStatus={Sound.status.PAUSED}
-          onFinishedPlaying={noop}
-          onLoad={noop}
-          onLoading={noop}
-          onPlaying={noop}
-          position={5}
-          volume={1}
-          equalizer={{ 40: 4, 50: 10, 60: 45, 70: 34 }}
-          preAmp={10}
-        />,
-        options,
-      );
-
-      const instance = testRenderer.getInstance();
-
-      expect((instance as any).filters[0].type).toEqual('lowshelf');
-      expect((instance as any).filters[1].type).toEqual('peaking');
-      expect((instance as any).filters[2].type).toEqual('peaking');
-      expect((instance as any).filters[3].type).toEqual('highshelf');
-    });
-  });
-
-  describe('controls', () => {
-    it('should call the play and pause method of html element according to playStatus prop', () => {
+  describe('props controls', () => {
+    test('play / pause', () => {
       const playSpy = jest.spyOn(audioElementMock, 'play');
       const pauseSpy = jest.spyOn(audioElementMock, 'pause');
       const testRenderer = TestRenderer.create(
         <Sound
           url="http://foo.ogg"
           playStatus={Sound.status.PAUSED}
-          onFinishedPlaying={noop}
-          onLoad={noop}
-          onLoading={noop}
-          onPlaying={noop}
-          position={5}
-          volume={1}
         />,
         options,
       );
+      expect(pauseSpy).toBeCalledTimes(1);
 
       testRenderer.update(
         <Sound
           url="http://foo.ogg"
           playStatus={Sound.status.PLAYING}
-          onFinishedPlaying={noop}
-          onLoad={noop}
-          onLoading={noop}
-          onPlaying={noop}
-          position={5}
-          volume={1}
         />,
       );
+      expect(playSpy).toBeCalledTimes(1);
+
+      const instance = testRenderer.getInstance() as any;
+      const stopSpy = jest.spyOn(instance, 'stop');
 
       testRenderer.update(
         <Sound
           url="http://foo.ogg"
-          playStatus={Sound.status.PAUSED}
-          onFinishedPlaying={noop}
-          onLoad={noop}
-          onLoading={noop}
-          onPlaying={noop}
-          position={5}
-          volume={1}
+          playStatus={Sound.status.STOPPED}
         />,
       );
-
-      expect(pauseSpy).toBeCalledTimes(2);
-      expect(playSpy).toBeCalledTimes(1);
+      expect(stopSpy).toHaveBeenCalled();
     });
 
-    it('should update volume according to the volume props', () => {
+    test('volume', () => {
       const testRenderer = TestRenderer.create(
         <Sound
           url="http://foo.ogg"
           playStatus={Sound.status.PAUSED}
-          onFinishedPlaying={noop}
-          onLoad={noop}
-          onLoading={noop}
-          onPlaying={noop}
-          position={5}
           volume={100}
         />,
         options,
@@ -181,11 +85,6 @@ describe('Sound Component', () => {
         <Sound
           url="http://foo.ogg"
           playStatus={Sound.status.PAUSED}
-          onFinishedPlaying={noop}
-          onLoad={noop}
-          onLoading={noop}
-          onPlaying={noop}
-          position={5}
           volume={50}
         />,
       );
@@ -193,39 +92,37 @@ describe('Sound Component', () => {
       expect((instance as any).gainNode.gain.value).toEqual(0.5);
     });
 
-    it('should set stereo according to the props', () => {
+    test('stereo', () => {
       const testRenderer = TestRenderer.create(
         <Sound
           url="http://foo.ogg"
           playStatus={Sound.status.PAUSED}
-          onFinishedPlaying={noop}
-          onLoad={noop}
-          onLoading={noop}
-          onPlaying={noop}
-          position={5}
-          volume={100}
           stereoPan={1}
         />,
         options,
       );
 
-      const instance = testRenderer.getInstance();
+      const instance = testRenderer.getInstance() as any;
 
-      expect((instance as any).stereoPanner.pan.value).toEqual(1);
+      expect(instance.stereoPanner.pan.value).toEqual(1);
+
+      testRenderer.update(
+        <Sound
+          url="http://foo.ogg"
+          playStatus={Sound.status.PAUSED}
+          stereoPan={-1}
+        />
+      )
+      expect(instance.stereoPanner.pan.value).toEqual(-1);
+
     });
 
-    it('should update the position according to props', () => {
+    test('position', () => {
       const testRenderer = TestRenderer.create(
         <Sound
           url="http://foo.ogg"
           playStatus={Sound.status.PAUSED}
-          onFinishedPlaying={noop}
-          onLoad={noop}
-          onLoading={noop}
-          onPlaying={noop}
           position={0}
-          volume={100}
-          stereoPan={1}
         />,
         options,
       );
@@ -234,13 +131,7 @@ describe('Sound Component', () => {
         <Sound
           url="http://foo.ogg"
           playStatus={Sound.status.PAUSED}
-          onFinishedPlaying={noop}
-          onLoad={noop}
-          onLoading={noop}
-          onPlaying={noop}
           position={300}
-          volume={100}
-          stereoPan={1}
         />,
       );
 
@@ -248,5 +139,159 @@ describe('Sound Component', () => {
 
       expect((instance as any).audio.currentTime).toEqual(300);
     });
+  });
+
+  describe('handlers', () => {
+    test('onPlaying', () => {
+      const mock = {
+        onPlaying: () => {}
+      }
+      const spy = jest.spyOn(mock, 'onPlaying');
+      const testRenderer = TestRenderer.create(
+        <Sound
+          url="http://foo.ogg"
+          playStatus={Sound.status.PLAYING}
+          onPlaying={mock.onPlaying}
+        />,
+        options,
+      );
+
+      const instance = testRenderer.getInstance() as any;
+      instance.handleTimeUpdate({ target: {} });
+
+      expect(spy).toHaveBeenCalled();
+    });
+  })
+
+  describe('equalizer', () => {
+    test('biQuadFilter', () => {
+      const testRenderer = TestRenderer.create(
+        <Sound
+          url="http://foo.ogg"
+          playStatus={Sound.status.PAUSED}
+          equalizer={{ 40: 4 }}
+        />,
+        options,
+      );
+
+      const instance = testRenderer.getInstance() as any;
+      expect(instance.filters[0].frequency.value).toEqual(40);
+      expect(instance.filters[0].gain.value).toEqual(4);
+
+      testRenderer.update(
+        <Sound
+          url="http://foo.ogg"
+          playStatus={Sound.status.PAUSED}
+          equalizer={{ 40: 89 }}
+        />
+      )
+      expect((instance as any).filters[0].gain.value).toEqual(89);
+    });
+
+    test('preAmp', () => {
+      const testRenderer = TestRenderer.create(
+        <Sound
+          url="http://foo.ogg"
+          playStatus={Sound.status.PAUSED}
+          equalizer={{ 40: 4, 50: 10 }}
+          preAmp={10}
+        />,
+        options,
+      );
+
+      const instance = testRenderer.getInstance() as any;
+      expect(instance.filters[0].gain.value).toEqual(14);
+      expect(instance.filters[1].gain.value).toEqual(20);
+
+      testRenderer.update(
+        <Sound
+          url="http://foo.ogg"
+          playStatus={Sound.status.PAUSED}
+          equalizer={{ 40: 4, 50: 10 }}
+          preAmp={5}
+        />
+      )
+      expect(instance.filters[0].gain.value).toEqual(9);
+      expect(instance.filters[1].gain.value).toEqual(15);
+    });
+
+    test('filter type', () => {
+      const testRenderer = TestRenderer.create(
+        <Sound
+          url="http://foo.ogg"
+          playStatus={Sound.status.PAUSED}
+          equalizer={{ 40: 4, 50: 10, 60: 45, 70: 34 }}
+          preAmp={10}
+        />,
+        options,
+      );
+
+      const instance = testRenderer.getInstance() as any;
+
+      expect(instance.filters[0].type).toEqual('lowshelf');
+      expect(instance.filters[1].type).toEqual('peaking');
+      expect(instance.filters[2].type).toEqual('peaking');
+      expect(instance.filters[3].type).toEqual('highshelf');
+    });
+
+    test('visualization', next => {
+      const mock = {
+        vizHandler: () => {}
+      }
+
+      const spy = jest.spyOn(mock, 'vizHandler');
+      const testRenderer = TestRenderer.create(
+        <Sound
+          url="http://foo.ogg"
+          playStatus={Sound.status.PLAYING}
+          equalizer={{ 40: 4, 50: 10, 60: 45, 70: 34 }}
+          preAmp={10}
+          onVisualizationChange={mock.vizHandler}
+        />,
+        options,
+      );
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalled();
+        testRenderer.update(<Sound url='http://foo.ogg' playStatus={Sound.status.PAUSED} />)
+        next();
+      }, 100);
+    });
+
+    test('visualization toggle', next => {
+      const mock = {
+        vizHandler: () => {}
+      }
+
+      const spy = jest.spyOn(mock, 'vizHandler');
+      const testRenderer = TestRenderer.create(
+        <Sound
+          url="http://foo.ogg"
+          playStatus={Sound.status.PLAYING}
+          equalizer={{ 40: 4, 50: 10, 60: 45, 70: 34 }}
+        />,
+        options,
+      );
+
+      testRenderer.update(
+        <Sound
+          url="http://foo.ogg"
+          playStatus={Sound.status.PLAYING}
+          equalizer={{ 40: 4, 50: 10, 60: 45, 70: 34 }}
+          onVisualizationChange={mock.vizHandler}
+        />
+      );
+
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalled();
+        testRenderer.update(
+          <Sound
+            url="http://foo.ogg"
+            playStatus={Sound.status.STOPPED}
+            equalizer={{ 40: 4, 50: 10, 60: 45, 70: 34 }}
+          />
+        );
+        next();
+      }, 100);
+    })
   });
 });

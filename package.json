@@ -31,7 +31,7 @@
     "lint": "tslint  --project tsconfig.json -t codeFrame 'src/**/*.tsx' 'test/**/*.tsx'",
     "prebuild": "rimraf dist && rimraf docs/index.html && rimraf docs/build",
     "build": "tsc --module commonjs && rollup -c rollup.config.ts && styleguidist build",
-    "test": "jest --coverage --config jest.json",
+    "test": "jest --coverage --config jest.json --detectOpenHandles --forceExit",
     "test:watch": "jest --coverage --watch -config jest.json",
     "test:prod": "npm run lint && npm run test -- --no-cache",
     "deploy-docs": "node tools/gh-pages-publish",
