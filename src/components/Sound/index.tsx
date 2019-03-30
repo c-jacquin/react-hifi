@@ -16,11 +16,11 @@ type OnPlayingArgs = {
  */
 export interface ISoundProps {
   url: string;
-  playStatus: string;
-  position: number;
+  playStatus?: string;
+  position?: number;
   /** volume */
-  volume: number;
-  onPlaying: (args: OnPlayingArgs) => void;
+  volume?: number;
+  onPlaying?: (args: OnPlayingArgs) => void;
   onFinishedPlaying?: (event: any) => void;
   onLoading?: (event: any) => void;
   onLoad?: (event: any) => void;
@@ -132,10 +132,12 @@ export class Sound extends React.Component<ISoundProps> {
   }
 
   private handleTimeUpdate({ target }: any) {
-    this.props.onPlaying({
-      position: target.currentTime,
-      duration: target.duration,
-    });
+    if (this.props.onPlaying) {
+      this.props.onPlaying({
+        position: target.currentTime,
+        duration: target.duration,
+      });
+    }
   }
 
   private setPlayerState() {
@@ -143,19 +145,26 @@ export class Sound extends React.Component<ISoundProps> {
       case Sound.status.PAUSED:
         this.pause();
         break;
-      case Sound.status.PLAYING:
-        this.play();
-        break;
       case Sound.status.STOPPED:
-        this.pause();
+        this.stop();
+        break;
+      case Sound.status.PLAYING:
+      default:
+        this.play();
         break;
     }
   }
 
-  private shouldUpdatePosition(previousPosition: number) {
-    const dif = this.props.position - previousPosition;
+  private shouldUpdatePosition({ position: prevPosition = 0 }: ISoundProps) {
+    const { position } = this.props;
 
-    return this.props.position < previousPosition || dif > 1;
+    if (position) {
+      const dif = position - prevPosition;
+
+      return position < prevPosition || dif > 1;
+    } else {
+      return false;
+    }
   }
 
   private shouldUpdateEqualizer(prevProps: ISoundProps) {
@@ -173,11 +182,15 @@ export class Sound extends React.Component<ISoundProps> {
   }
 
   private setVolume() {
-    this.gainNode.gain.value = this.props.volume / 100;
+    const { volume = 100 } = this.props;
+
+    this.gainNode.gain.value = volume / 100;
   }
 
   private setPosition() {
-    this.audio.currentTime = this.props.position;
+    if (this.props.position) {
+      this.audio.currentTime = this.props.position;
+    }
   }
 
   private setStereoPan() {
@@ -220,7 +233,7 @@ export class Sound extends React.Component<ISoundProps> {
       this.setVolume();
     }
 
-    if (this.shouldUpdatePosition(prevProps.position)) {
+    if (this.shouldUpdatePosition(prevProps)) {
       this.setPosition();
     }
 
@@ -277,7 +290,7 @@ export class Sound extends React.Component<ISoundProps> {
         style={{ visibility: 'hidden' }}
         src={this.props.url}
         ref={this.attachRef}
-        onTimeUpdate={this.handleTimeUpdate}
+        onTimeUpdate={this.props.onPlaying ? this.handleTimeUpdate : undefined}
         onEnded={this.props.onFinishedPlaying}
         onLoadStart={this.props.onLoading}
         onLoad={this.props.onLoad}
