@@ -23,6 +23,7 @@ interface SoundProps {
   onVisualizationChange?: (data: number[]) => void;
   equalizer?: Record<string, number>;
   preAmp?: number;
+  stereoPan?: number;
 }
 
 /** @component */
@@ -33,6 +34,7 @@ export class Sound extends React.Component<SoundProps> {
   source: MediaElementAudioSourceNode;
   filters: BiquadFilterNode[] = [];
   analyser: AnalyserNode;
+  stereoPanner: StereoPannerNode;
   qValues: Array<number | null>;
   frequencyData: Uint8Array;
   animationFrame: number;
@@ -133,6 +135,7 @@ export class Sound extends React.Component<SoundProps> {
   setPlayerState() {
     switch (this.props.playStatus) {
       case Sound.status.PAUSED:
+        // this.audioContext.suspend();
         this.audio.pause();
         cancelAnimationFrame(this.animationFrame);
         break;
@@ -161,6 +164,20 @@ export class Sound extends React.Component<SoundProps> {
     return this.props.position < previousPosition || dif > 1;
   }
 
+  shouldUpdateEqualizer(prevProps: SoundProps) {
+    const { equalizer, preAmp } = this.props;
+
+    return (
+      equalizer &&
+      prevProps.equalizer &&
+      !(
+        Object.entries(equalizer).toString() ===
+        Object.entries(prevProps.equalizer).toString()
+      )
+    ) ||
+    preAmp !== prevProps.preAmp
+  }
+
   setVolume() {
     this.gainNode.gain.value = this.props.volume / 100;
   }
@@ -169,12 +186,17 @@ export class Sound extends React.Component<SoundProps> {
     this.audio.currentTime = this.props.position;
   }
 
+  setStereoPan() {
+    this.stereoPanner.pan.value = this.props.stereoPan || 0;
+  }
+
   componentDidUpdate(prevProps: SoundProps) {
     const {
       volume,
       playStatus,
-      equalizer,
-      preAmp = 0
+      equalizer = {},
+      preAmp = 0,
+      stereoPan = 0
     } = this.props;
 
     if (volume !== prevProps.volume) {
@@ -189,32 +211,34 @@ export class Sound extends React.Component<SoundProps> {
       this.setPlayerState();
     }
 
-    if (equalizer && prevProps.equalizer) {
-      if (
-        !(
-          Object.entries(equalizer).toString() ===
-          Object.entries(prevProps.equalizer).toString()
-        ) ||
-        (preAmp !== prevProps.preAmp)
-      ) {
-        Object.values(equalizer).forEach((value, idx) => {
-          this.filters[idx].gain.value = value + preAmp;
-        });
-      }
+    if (stereoPan !== prevProps.stereoPan) {
+      this.setStereoPan();
+    }
+
+    if (this.shouldUpdateEqualizer(prevProps)) {
+      Object.values(equalizer).forEach((value, idx) => {
+        this.filters[idx].gain.value = value + preAmp;
+      });
     }
   }
 
   componentDidMount() {
     this.audioContext = new AudioContext();
     this.gainNode = this.audioContext.createGain();
+    this.stereoPanner = new StereoPannerNode(
+      this.audioContext,
+      { pan: this.props.stereoPan || 0 }
+    );
     this.source = this.audioContext.createMediaElementSource(this.audio);
     this.analyser = this.audioContext.createAnalyser();
     this.analyser.fftSize = 32768;
     this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
 
     this.source.connect(this.gainNode);
-    this.createFilterNodes().connect(this.analyser);
-    this.analyser.connect(this.audioContext.destination);
+    this.createFilterNodes()
+      .connect(this.analyser)
+      .connect(this.stereoPanner)
+      .connect(this.audioContext.destination);
 
     this.setVolume();
     this.setPlayerState();

@@ -55,7 +55,8 @@ const Player = () => {
     position: 0,
     duration: 0,
     volume: 100,
-    preAmp: 0
+    preAmp: 0,
+    stereo: 0
   });
   const [eq, setEq] = useState({
     '60': 0,
@@ -109,6 +110,14 @@ const Player = () => {
         value={state.volume}
         onChange={evt => setState({ ...state, volume: Number(evt.target.value) })}
       />
+      <input
+        type="range"
+        min="-1"
+        max="1"
+        step="0.1"
+        value={state.stereo}
+        onChange={evt => setState({ ...state, stereo: Number(evt.target.value) })}
+      />
       <div>
         <input
           type="range"
@@ -125,7 +134,7 @@ const Player = () => {
         ref={canvas}
       />
       <Sound
-        url="http://localhost:8080/demo.mp3"
+        url="demo.mp3"
         playStatus={state.status}
         onFinishedPlaying={console.log}
         onLoad={console.log}
@@ -159,6 +168,7 @@ const Player = () => {
         volume={state.volume}
         equalizer={eq}
         preAmp={state.preAmp}
+        stereoPan={state.stereo}
       />
     </div>
   );
