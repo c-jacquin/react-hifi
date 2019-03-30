@@ -1,11 +1,14 @@
 {
   "name": "react-sound-html5",
   "version": "0.0.0-development",
-  "description": "",
+  "description": "A tiny React component wich provide simple abstraption to manipulate HTML5 AudioContext API (Equalizer, visualisation, stereo, basic controls)",
   "keywords": [
     "audio",
+    "react",
     "react-sound",
     "html5",
+    "equalizer",
+    "audio player",
     "nuclear"
   ],
   "main": "dist/react-sound-html5.umd.js",
