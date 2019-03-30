@@ -248,6 +248,7 @@ export class Sound extends React.Component<ISoundProps> {
 
     this.setVolume();
     this.setPlayerState();
+    this.setStereoPan();
   }
 
   render() {

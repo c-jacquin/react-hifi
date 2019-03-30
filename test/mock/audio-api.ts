@@ -12,7 +12,9 @@ class AudioNodeMock {
   Q = {
     value: 0,
   };
-  connect() {}
+  connect() {
+    return new AudioNodeMock();
+  }
 }
 
 class AudioContextMock {
@@ -33,4 +35,16 @@ class AudioContextMock {
   }
 }
 
+class StereoPannerNodeMock extends AudioNodeMock {
+  pan: { value: number };
+
+  constructor(options?: { pan: number }) {
+    super();
+    this.pan = {
+      value: options ? options.pan : 0,
+    };
+  }
+}
+
 (global as any).AudioContext = AudioContextMock;
+(global as any).StereoPannerNode = StereoPannerNodeMock;
