@@ -8,10 +8,6 @@ import { Sound } from './index.tsx';
 <Sound
   url="demo.mp3"
   playStatus={Sound.status.PAUSED}
-  onFinishedPlaying={console.log}
-  onLoad={console.log}
-  onLoading={console.log}
-  onPlaying={console.log}
   position={5}
   volume={10}
 />
@@ -56,7 +52,8 @@ const Player = () => {
     duration: 0,
     volume: 100,
     preAmp: 0,
-    stereo: 0
+    stereo: 0,
+    loading: false
   });
   const [eq, setEq] = useState({
     '60': 0,
@@ -75,10 +72,88 @@ const Player = () => {
   const canvas = React.createRef();
   let canvasContext;
 
+  const drawBarChart = data => {
+    if (canvas.current) {
+      if (!canvasContext) {
+        canvasContext = canvas.current.getContext('2d');
+        canvasContext.fillStyle = 'rgb(0, 0, 0)';
+        canvasContext.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      }
+
+      const barWidth = (CANVAS_WIDTH / data.length);
+      let barHeight;
+      let barPositionY;
+      let barPositionX = 0;
+
+      for (let i = 0; i < data.length; i++) {
+        barHeight = data[i] * 2;
+        barPositionY = CANVAS_HEIGHT - barHeight / 2;
+
+        canvasContext.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+        canvasContext.fillRect(barPositionX, barPositionY, barWidth, barHeight);
+
+        barPositionX += barWidth + 1;
+      }
+    }
+  }
+
   return (
     <div>
+      <Sound
+        url="demo.mp3"
+        playStatus={state.status}
+        onFinishedPlaying={() => setState({ ...state, status: Sound.status.STOPPED })}
+        onLoad={() => setState({ ...state, loading: false })}
+        onLoading={() => setState({ ...state, loading: true })}
+        onPlaying={data => setState({ ...state, ...data  })}
+        onVisualizationChange={drawBarChart}
+        position={state.position}
+        volume={state.volume}
+        equalizer={eq}
+        preAmp={state.preAmp}
+        stereoPan={state.stereo}
+      />
       <div>
-        <p>Equalizer</p>
+        {!state.loading && (
+          <React.Fragment>
+            <button
+              onClick={() => setState({ ...state, status: Sound.status.PLAYING })}
+            >
+              Play
+            </button>
+            <button
+              onClick={() => setState({ ...state, status: Sound.status.PAUSED })}
+            >
+              Pause
+            </button>
+            <button
+              onClick={() => setState({ ...state, status: Sound.status.STOPPED })}
+            >
+              Stop
+            </button>
+          </React.Fragment>
+        )}
+        {state.loading && <span>loading</span>}
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="0.1"
+          value={state.volume}
+          onChange={evt => setState({ ...state, volume: Number(evt.target.value) })}
+        />
+      </div>
+      <div>
+        <input
+          type="range"
+          min="0"
+          max={state.duration}
+          step="0.1"
+          value={state.position}
+          onChange={evt => setState({ ...state, position: Number(evt.target.value) })}
+        />
+      </div>
+      <div>
         <VerticalSlider
           value={state.preAmp}
           onChange={evt => setState({ ...state, preAmp: Number(evt.target.value) })}
@@ -92,83 +167,21 @@ const Player = () => {
           />
         ))}
       </div>
-      <button
-        onClick={() => setState({ ...state, status: Sound.status.PLAYING })}
-      >
-        Play
-      </button>
-      <button
-        onClick={() => setState({ ...state, status: Sound.status.PAUSED })}
-      >
-        Pause
-      </button>
-      <input
-        type="range"
-        min="0"
-        max="100"
-        step="0.1"
-        value={state.volume}
-        onChange={evt => setState({ ...state, volume: Number(evt.target.value) })}
-      />
-      <input
-        type="range"
-        min="-1"
-        max="1"
-        step="0.1"
-        value={state.stereo}
-        onChange={evt => setState({ ...state, stereo: Number(evt.target.value) })}
-      />
       <div>
         <input
           type="range"
-          min="0"
-          max={state.duration}
+          min="-1"
+          max="1"
           step="0.1"
-          value={state.position}
-          onChange={evt => setState({ ...state, position: Number(evt.target.value) })}
+          value={state.stereo}
+          onChange={evt => setState({ ...state, stereo: Number(evt.target.value) })}
         />
       </div>
+
       <canvas
         width={CANVAS_WIDTH}
         height={CANVAS_HEIGHT}
         ref={canvas}
-      />
-      <Sound
-        url="demo.mp3"
-        playStatus={state.status}
-        onFinishedPlaying={console.log}
-        onLoad={console.log}
-        onLoading={console.log}
-        onPlaying={data => setState({ ...state, ...data  })}
-        onVisualizationChange={data => {
-          if (canvas.current) {
-            if (!canvasContext) {
-              canvasContext = canvas.current.getContext('2d');
-              canvasContext.fillStyle = 'rgb(0, 0, 0)';
-              canvasContext.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-            }
-
-            const barWidth = (CANVAS_WIDTH / data.length);
-            let barHeight;
-            let barPositionY;
-            let barPositionX = 0;
-
-            for (let i = 0; i < data.length; i++) {
-              barHeight = data[i] * 2;
-              barPositionY = CANVAS_HEIGHT - barHeight / 2;
-
-              canvasContext.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
-              canvasContext.fillRect(barPositionX, barPositionY, barWidth, barHeight);
-
-              barPositionX += barWidth + 1;
-            }
-          }
-        }}
-        position={state.position}
-        volume={state.volume}
-        equalizer={eq}
-        preAmp={state.preAmp}
-        stereoPan={state.stereo}
       />
     </div>
   );
