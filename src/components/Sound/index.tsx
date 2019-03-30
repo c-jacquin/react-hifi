@@ -293,7 +293,7 @@ export class Sound extends React.Component<ISoundProps> {
         onTimeUpdate={this.props.onPlaying ? this.handleTimeUpdate : undefined}
         onEnded={this.props.onFinishedPlaying}
         onLoadStart={this.props.onLoading}
-        onLoad={this.props.onLoad}
+        onCanPlayThrough={this.props.onLoad}
       />
     );
   }
