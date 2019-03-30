@@ -5,7 +5,7 @@
 [![Coveralls](https://img.shields.io/coveralls/charjac/react-sound-html5.svg)](https://coveralls.io/github/charjac/react-sound-html5)
 [![Dev Dependencies](https://david-dm.org/charjac/react-sound-html5/dev-status.svg)](https://david-dm.org/charjac/react-sound-html5?type=dev)
 
-A drop in replacement for react-sound without the soundManager2 dependency, and extra features, like equalizer support and audio visualization.
+A drop in replacement for react-sound without the soundManager2 dependency, and extra features, like equalizer, stereo and visualization.
 check the [documentation](https://charjac.github.io/react-sound-html5/)
 
 ## Usage

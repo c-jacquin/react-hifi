@@ -11,10 +11,14 @@ type OnPlayingArgs = {
   duration: number;
 };
 
-interface SoundProps {
+/**
+ * Sound Props
+ */
+export interface ISoundProps {
   url: string;
   playStatus: string;
   position: number;
+  /** volume */
   volume: number;
   onPlaying: (args: OnPlayingArgs) => void;
   onFinishedPlaying?: (event: any) => void;
@@ -26,8 +30,10 @@ interface SoundProps {
   stereoPan?: number;
 }
 
-/** @component */
-export class Sound extends React.Component<SoundProps> {
+/**
+ * Sound Component
+ */
+export class Sound extends React.Component<ISoundProps> {
   audio: HTMLAudioElement;
   audioContext: AudioContext;
   gainNode: GainNode;
@@ -41,7 +47,7 @@ export class Sound extends React.Component<SoundProps> {
 
   static status = SoundStatus;
 
-  constructor(props: SoundProps) {
+  constructor(props: ISoundProps) {
     super(props);
 
     this.handleVisualizationChange = this.handleVisualizationChange.bind(this);
@@ -164,7 +170,7 @@ export class Sound extends React.Component<SoundProps> {
     return this.props.position < previousPosition || dif > 1;
   }
 
-  shouldUpdateEqualizer(prevProps: SoundProps) {
+  shouldUpdateEqualizer(prevProps: ISoundProps) {
     const { equalizer, preAmp } = this.props;
 
     return (
@@ -190,7 +196,7 @@ export class Sound extends React.Component<SoundProps> {
     this.stereoPanner.pan.value = this.props.stereoPan || 0;
   }
 
-  componentDidUpdate(prevProps: SoundProps) {
+  componentDidUpdate(prevProps: ISoundProps) {
     const {
       volume,
       playStatus,

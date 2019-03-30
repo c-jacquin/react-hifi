@@ -5,11 +5,8 @@ module.exports = {
   components: 'src/components/**/*.tsx',
   styleguideDir: 'docs',
   resolver: require('react-docgen').resolver.findAllComponentDefinitions,
-  propsParser: require('react-docgen-typescript').withDefaultConfig().parse,
+  propsParser: require('react-docgen-typescript').withCustomConfig('./tsconfig.json').parse,
   webpackConfig: {
-    entry: {
-      app: path.resolve(__dirname, 'src/index.ts'),
-    },
     resolve: {
       extensions: ['.ts', '.tsx', '.js'],
       modules: ['node_modules'],
@@ -21,7 +18,7 @@ module.exports = {
           exclude: /node_modules/,
           loaders: [
             {
-              loader: 'awesome-typescript-loader'
+              loader: 'ts-loader'
             }
           ]
         },

@@ -1,6 +1,6 @@
-# Sound
-
 ## Simple usecase
+
+Simply replace Sound.status.PAUSED with Sound.status.PLAYING
 
 ```jsx
 import { Sound } from './index.tsx';
