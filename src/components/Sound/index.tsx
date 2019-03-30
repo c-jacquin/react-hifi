@@ -34,18 +34,18 @@ export interface ISoundProps {
  * Sound Component
  */
 export class Sound extends React.Component<ISoundProps> {
-  audio: HTMLAudioElement;
-  audioContext: AudioContext;
-  gainNode: GainNode;
-  source: MediaElementAudioSourceNode;
-  filters: BiquadFilterNode[] = [];
-  analyser: AnalyserNode;
-  stereoPanner: StereoPannerNode;
-  qValues: Array<number | null>;
-  frequencyData: Uint8Array;
-  animationFrame: number;
+  private audio: HTMLAudioElement;
+  private audioContext: AudioContext;
+  private gainNode: GainNode;
+  private source: MediaElementAudioSourceNode;
+  private filters: BiquadFilterNode[] = [];
+  private analyser: AnalyserNode;
+  private stereoPanner: StereoPannerNode;
+  private qValues: Array<number | null>;
+  private frequencyData: Uint8Array;
+  private animationFrame: number;
 
-  static status = SoundStatus;
+  public static status = SoundStatus;
 
   constructor(props: ISoundProps) {
     super(props);
@@ -55,13 +55,13 @@ export class Sound extends React.Component<ISoundProps> {
     this.attachRef = this.attachRef.bind(this);
   }
 
-  attachRef(element: HTMLAudioElement) {
+  private attachRef(element: HTMLAudioElement) {
     if (element) {
       this.audio = element;
     }
   }
 
-  createFilterNodes() {
+  private createFilterNodes() {
     let lastInChain = this.gainNode;
     const { equalizer, preAmp = 0 } = this.props;
 
@@ -100,11 +100,11 @@ export class Sound extends React.Component<ISoundProps> {
     return lastInChain;
   }
 
-  formatDataVizByFrequency(data: Uint8Array) {
+  private formatDataVizByFrequency(data: Uint8Array) {
     const { equalizer } = this.props;
     const values = [];
-    let currentIndex = 0;
     const HERTZ_ITER = 23.4;
+    let currentIndex = 0;
 
     if (equalizer) {
       const frequencies = Object.keys(equalizer).map(Number);
@@ -122,7 +122,7 @@ export class Sound extends React.Component<ISoundProps> {
     return values;
   }
 
-  handleVisualizationChange() {
+  private handleVisualizationChange() {
     this.animationFrame = requestAnimationFrame(this.handleVisualizationChange);
     this.analyser.getByteFrequencyData(this.frequencyData);
 
@@ -131,46 +131,34 @@ export class Sound extends React.Component<ISoundProps> {
     }
   }
 
-  handleTimeUpdate({ target }: any) {
+  private handleTimeUpdate({ target }: any) {
     this.props.onPlaying({
       position: target.currentTime,
       duration: target.duration,
     });
   }
 
-  setPlayerState() {
+  private setPlayerState() {
     switch (this.props.playStatus) {
       case Sound.status.PAUSED:
-        // this.audioContext.suspend();
-        this.audio.pause();
-        cancelAnimationFrame(this.animationFrame);
+        this.pause();
         break;
       case Sound.status.PLAYING:
-        this.audio
-          .play()
-          .then(
-            () =>
-              !!this.props.onVisualizationChange &&
-              !!this.props.equalizer &&
-              this.handleVisualizationChange(),
-          )
-          .catch(console.error);
+        this.play();
         break;
       case Sound.status.STOPPED:
-        this.audio.pause();
-        this.audio.currentTime = 0;
-        cancelAnimationFrame(this.animationFrame);
+        this.pause();
         break;
     }
   }
 
-  shouldUpdatePosition(previousPosition: number) {
+  private shouldUpdatePosition(previousPosition: number) {
     const dif = this.props.position - previousPosition;
 
     return this.props.position < previousPosition || dif > 1;
   }
 
-  shouldUpdateEqualizer(prevProps: ISoundProps) {
+  private shouldUpdateEqualizer(prevProps: ISoundProps) {
     const { equalizer, preAmp } = this.props;
 
     return (
@@ -184,16 +172,39 @@ export class Sound extends React.Component<ISoundProps> {
     preAmp !== prevProps.preAmp
   }
 
-  setVolume() {
+  private setVolume() {
     this.gainNode.gain.value = this.props.volume / 100;
   }
 
-  setPosition() {
+  private setPosition() {
     this.audio.currentTime = this.props.position;
   }
 
-  setStereoPan() {
+  private setStereoPan() {
     this.stereoPanner.pan.value = this.props.stereoPan || 0;
+  }
+
+  protected play() {
+    this.audio
+      .play()
+      .then(() =>
+        !!this.props.onVisualizationChange &&
+        !!this.props.equalizer &&
+        this.handleVisualizationChange(),
+      )
+      .catch(console.error);
+  }
+
+  protected pause() {
+    this.audio.pause();
+    if (this.animationFrame) {
+      cancelAnimationFrame(this.animationFrame);
+    }
+  }
+
+  protected stop() {
+    this.pause();
+    this.audio.currentTime = 0;
   }
 
   componentDidUpdate(prevProps: ISoundProps) {
@@ -219,6 +230,14 @@ export class Sound extends React.Component<ISoundProps> {
 
     if (stereoPan !== prevProps.stereoPan) {
       this.setStereoPan();
+    }
+
+    if (!prevProps.onVisualizationChange && this.props.onVisualizationChange && this.props.equalizer) {
+      this.handleVisualizationChange();
+    }
+
+    if (prevProps.onVisualizationChange && !this.props.onVisualizationChange) {
+      cancelAnimationFrame(this.animationFrame);
     }
 
     if (this.shouldUpdateEqualizer(prevProps)) {
