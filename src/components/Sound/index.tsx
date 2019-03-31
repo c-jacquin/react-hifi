@@ -16,17 +16,27 @@ type OnPlayingArgs = {
  */
 export interface ISoundProps {
   url: string;
+  /** PLAYING, PAUSED or STOPPED */
   playStatus?: string;
+  /** the position in second */
   position?: number;
-  /** volume */
+  /** A value between 0 and 100 */
   volume?: number;
+  /** onTimeUpdate handler */
   onPlaying?: (args: OnPlayingArgs) => void;
+  /** trigger when the sound is over */
   onFinishedPlaying?: (event: any) => void;
+  /** trigger when the load start */
   onLoading?: (event: any) => void;
+  /** trigger when the file is ready to play */
   onLoad?: (event: any) => void;
+  /** if provided with equalizer, provide visualization data by frequency  */
   onVisualizationChange?: (data: number[]) => void;
+  /** equalizer values { frequency: value } */
   equalizer?: Record<string, number>;
+  /** a value to add to all equalizer filters */
   preAmp?: number;
+  /** a value between -1 and 1 */
   stereoPan?: number;
 }
 
@@ -55,13 +65,13 @@ export class Sound extends React.Component<ISoundProps> {
     this.attachRef = this.attachRef.bind(this);
   }
 
-  private attachRef(element: HTMLAudioElement) {
+  private attachRef(element: HTMLAudioElement): void {
     if (element) {
       this.audio = element;
     }
   }
 
-  private createFilterNodes() {
+  private createFilterNodes(): AudioNode {
     let lastInChain = this.gainNode;
     const { equalizer, preAmp = 0 } = this.props;
 
@@ -100,7 +110,7 @@ export class Sound extends React.Component<ISoundProps> {
     return lastInChain;
   }
 
-  private formatDataVizByFrequency(data: Uint8Array) {
+  private formatDataVizByFrequency(data: Uint8Array): number[] {
     const { equalizer } = this.props;
     const values = [];
     const HERTZ_ITER = 23.4;
@@ -122,7 +132,7 @@ export class Sound extends React.Component<ISoundProps> {
     return values;
   }
 
-  private handleVisualizationChange() {
+  private handleVisualizationChange(): void {
     this.animationFrame = requestAnimationFrame(this.handleVisualizationChange);
     this.analyser.getByteFrequencyData(this.frequencyData);
 
@@ -131,7 +141,7 @@ export class Sound extends React.Component<ISoundProps> {
     }
   }
 
-  private handleTimeUpdate({ target }: any) {
+  private handleTimeUpdate({ target }: any): void {
     if (this.props.onPlaying) {
       this.props.onPlaying({
         position: target.currentTime,
@@ -140,7 +150,7 @@ export class Sound extends React.Component<ISoundProps> {
     }
   }
 
-  private setPlayerState() {
+  private setPlayerState(): void {
     switch (this.props.playStatus) {
       case Sound.status.PAUSED:
         this.pause();
@@ -155,7 +165,7 @@ export class Sound extends React.Component<ISoundProps> {
     }
   }
 
-  private shouldUpdatePosition({ position: prevPosition = 0 }: ISoundProps) {
+  private shouldUpdatePosition({ position: prevPosition = 0 }: ISoundProps): boolean {
     const { position } = this.props;
 
     if (position) {
@@ -167,7 +177,7 @@ export class Sound extends React.Component<ISoundProps> {
     }
   }
 
-  private shouldUpdateEqualizer(prevProps: ISoundProps) {
+  private shouldUpdateEqualizer(prevProps: ISoundProps): boolean {
     const { equalizer, preAmp } = this.props;
 
     return (
@@ -181,23 +191,23 @@ export class Sound extends React.Component<ISoundProps> {
     preAmp !== prevProps.preAmp
   }
 
-  private setVolume() {
+  private setVolume(): void {
     const { volume = 100 } = this.props;
 
     this.gainNode.gain.value = volume / 100;
   }
 
-  private setPosition() {
+  private setPosition(): void {
     if (this.props.position) {
       this.audio.currentTime = this.props.position;
     }
   }
 
-  private setStereoPan() {
+  private setStereoPan(): void {
     this.stereoPanner.pan.value = this.props.stereoPan || 0;
   }
 
-  protected play() {
+  protected play(): void {
     this.audio
       .play()
       .then(() =>
@@ -208,14 +218,14 @@ export class Sound extends React.Component<ISoundProps> {
       .catch(console.error);
   }
 
-  protected pause() {
+  protected pause(): void {
     this.audio.pause();
     if (this.animationFrame) {
       cancelAnimationFrame(this.animationFrame);
     }
   }
 
-  protected stop() {
+  protected stop(): void {
     this.pause();
     this.audio.currentTime = 0;
   }
