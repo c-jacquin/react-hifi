@@ -236,7 +236,8 @@ export class Sound extends React.Component<ISoundProps> {
       playStatus,
       equalizer = {},
       preAmp = 0,
-      stereoPan = 0
+      stereoPan = 0,
+      url
     } = this.props;
 
     if (volume !== prevProps.volume) {
@@ -247,7 +248,7 @@ export class Sound extends React.Component<ISoundProps> {
       this.setPosition();
     }
 
-    if (playStatus !== prevProps.playStatus) {
+    if (playStatus !== prevProps.playStatus || url !== prevProps.url) {
       this.setPlayerState();
     }
 
