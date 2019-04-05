@@ -1,1 +1,3 @@
-export { Sound as default } from './components/Sound';
+export { Sound as default } from './Sound';
+export * from './plugins';
+export * from './AudioContext';
