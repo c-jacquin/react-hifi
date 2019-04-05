@@ -9,7 +9,7 @@ interface VerticalSliderProps {
 export const VerticalSlider: React.FunctionComponent<VerticalSliderProps> = ({
   value,
   onChange,
-  style
+  style,
 }) => (
   <input
     type="range"
@@ -23,7 +23,7 @@ export const VerticalSlider: React.FunctionComponent<VerticalSliderProps> = ({
       WebkitAppearance: 'slider-vertical',
       width: '8px',
       height: '175px',
-      padding: '0 5px'
+      padding: '0 5px',
     }}
   />
 );

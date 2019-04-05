@@ -9,7 +9,8 @@ interface BiQuadPluginProps {
   prevFreq?: number;
   nextFreq?: number;
   q?: number;
-  type?: 'lowpass'
+  type?:
+    | 'lowpass'
     | 'highpass'
     | 'bandpass'
     | 'lowshelf'

@@ -85,15 +85,25 @@ export class Sound extends React.Component<SoundProps, SoundState> {
 
       return [
         flatChildren.map((plugin, idx) => (
-          <plugin.type {...plugin.props} position={idx + 1} key={idx + 1} audioContext={this.state.audioContext} />
+          <plugin.type
+            {...plugin.props}
+            position={idx + 1}
+            key={idx + 1}
+            audioContext={this.state.audioContext}
+          />
         )),
-      <Destination position={flatChildren.length + 1} key={flatChildren.length + 1} />,
-      ]
-    } else if(children) {
+        <Destination position={flatChildren.length + 1} key={flatChildren.length + 1} />,
+      ];
+    } else if (children) {
       return [
-        <children.type {...children.props} position={1} key={1} audioContext={this.state.audioContext} />,
+        <children.type
+          {...children.props}
+          position={1}
+          key={1}
+          audioContext={this.state.audioContext}
+        />,
         <Destination position={2} key={2} />,
-      ]
+      ];
     } else {
       return null;
     }

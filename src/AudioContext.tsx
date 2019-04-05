@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react'
+import React, { createContext, useState } from 'react';
 
 export enum ContextState {
   RUNNING = 'running',
@@ -7,7 +7,7 @@ export enum ContextState {
 }
 
 export interface AudioState {
-  audioContext: AudioContext,
+  audioContext: AudioContext;
   lastInChain?: AudioNode;
 }
 
@@ -25,24 +25,19 @@ const initialState: AudioContextState = {
 
 const { Provider, Consumer } = createContext<AudioContextState>(initialState);
 
-const ContextProvider: React.FunctionComponent<ContextProviderProps> = ({
-  children,
-  context
-}) => (
-  <Provider value={context}>
-    {children}
-  </Provider>
+const ContextProvider: React.FunctionComponent<ContextProviderProps> = ({ children, context }) => (
+  <Provider value={context}>{children}</Provider>
 );
 
 export interface ContextConsumerContext {
-  audioContext: AudioContext,
+  audioContext: AudioContext;
   lastInChain: AudioNode;
   updateLastInChain: <N = AudioNode>(node: N) => void;
 }
 
 interface ContextConsumerProps {
-  children: (context: ContextConsumerContext) => React.ReactNode
-};
+  children: (context: ContextConsumerContext) => React.ReactNode;
+}
 
 interface ContextConsumerState {
   prevNode?: AudioNode;
@@ -55,11 +50,11 @@ const ContextConsumer: React.FunctionComponent<ContextConsumerProps> = ({ childr
     <Consumer>
       {context => {
         if (
-          context.audioContext
-          && context.audioContext.state !== ContextState.CLOSED
-          && context.lastInChain
-          && context.updateLastInChain
-          && state.prevNode !== context.lastInChain
+          context.audioContext &&
+          context.audioContext.state !== ContextState.CLOSED &&
+          context.lastInChain &&
+          context.updateLastInChain &&
+          state.prevNode !== context.lastInChain
         ) {
           setState({ prevNode: context.lastInChain });
           children(context as ContextConsumerContext);
@@ -69,7 +64,6 @@ const ContextConsumer: React.FunctionComponent<ContextConsumerProps> = ({ childr
       }}
     </Consumer>
   );
-}
+};
 
 export { ContextConsumer, ContextProvider };
-

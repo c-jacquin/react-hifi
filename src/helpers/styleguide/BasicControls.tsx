@@ -18,7 +18,7 @@ export const BasicControls: React.FunctionComponent<ControlsProps> = ({
   onTimeChange,
   position,
   duration,
-  children
+  children,
 }) => (
   <div>
     <div>
@@ -29,8 +29,8 @@ export const BasicControls: React.FunctionComponent<ControlsProps> = ({
           <button onClick={onStop}>Stop</button>
         </React.Fragment>
       )}
-    {children}
-    {loading && <span>loading</span>}
+      {children}
+      {loading && <span>loading</span>}
     </div>
     <div>
       <input
@@ -52,14 +52,7 @@ interface StereoControlProps {
 
 export const StereoControl: React.FunctionComponent<StereoControlProps> = ({ onChange, value }) => (
   <div>
-    <input
-      type="range"
-      min="-1"
-      max="1"
-      step="0.1"
-      value={value}
-      onChange={onChange}
-    />
+    <input type="range" min="-1" max="1" step="0.1" value={value} onChange={onChange} />
   </div>
 );
 

@@ -13,7 +13,7 @@ export class VolumePlugin implements Plugin<VolumePluginProps, GainNode> {
   }
 
   createNode(audioContext: AudioContext, props: VolumePluginProps) {
-    const gainNode =  audioContext.createGain();
+    const gainNode = audioContext.createGain();
     this.updateNode(gainNode, props);
 
     return gainNode;
