@@ -1,5 +1,3 @@
-import { memo } from 'react';
-
 import { pluginFactory } from '../_lib/factory';
 import { Plugin } from '../Plugin';
 
@@ -9,6 +7,10 @@ interface StereoPluginProps {
 }
 
 export class StereoPlugin implements Plugin<StereoPluginProps, StereoPannerNode> {
+  shouldNotUpdate(prevProps: StereoPluginProps, nextProps: StereoPluginProps) {
+    return prevProps.value === nextProps.value;
+  }
+
   createNode(audioContext: AudioContext, { value }: StereoPluginProps) {
     return new StereoPannerNode(audioContext, { pan: value });
   }
@@ -18,7 +20,4 @@ export class StereoPlugin implements Plugin<StereoPluginProps, StereoPannerNode>
   }
 }
 
-export default memo(
-  pluginFactory<StereoPluginProps, StereoPannerNode>(new StereoPlugin()),
-  (prevProps, nextProps) => prevProps.value === nextProps.value,
-);
+export default pluginFactory<StereoPluginProps, StereoPannerNode>(new StereoPlugin());

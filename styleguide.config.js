@@ -5,8 +5,7 @@ module.exports = {
   components: 'src/**/*.tsx',
   ignore: [
     'src/**/helpers/**/*.tsx',
-    'src/**/plugins/_lib/*.tsx',
-    'src/**/AudioContext.tsx'
+    'src/**/plugins/_lib/*.tsx'
   ],
   styleguideDir: 'docs',
   resolver: require('react-docgen').resolver.findAllComponentDefinitions,

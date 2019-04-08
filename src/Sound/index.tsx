@@ -1,6 +1,5 @@
-import React, { ReactElement, memo } from 'react';
+import React, { ReactElement } from 'react';
 
-import { ContextProvider, AudioState } from '../AudioContext';
 import { pluginFactory } from '../plugins';
 
 enum SoundStatus {
@@ -14,14 +13,11 @@ type OnPlayingArgs = {
   duration: number;
 };
 
-const Destination = memo(
-  pluginFactory<{}, AudioDestinationNode>({
-    createNode(audioContext: AudioContext) {
-      return audioContext.destination;
-    },
-  }),
-  () => true,
-);
+const Destination = pluginFactory<{}, AudioDestinationNode>({
+  createNode(audioContext: AudioContext) {
+    return audioContext.destination;
+  },
+});
 
 /**
  * Sound Props
@@ -41,12 +37,17 @@ export interface SoundProps {
   onLoading?: (event: any) => void;
   /** trigger when the file is ready to play */
   onLoad?: (event: any) => void;
+
   children?: ReactElement[] | ReactElement;
 }
 
-export interface SoundState extends AudioState {
+export interface SoundState {
   /** message to display in case of error */
   error?: string;
+  /** html5 AudioContext instance */
+  audioContext: AudioContext;
+  /** the AudioNode register by childrens  */
+  audioNodes: AudioNode[];
 }
 
 /**
@@ -59,6 +60,7 @@ export class Sound extends React.Component<SoundProps, SoundState> {
 
   public state: SoundState = {
     audioContext: new AudioContext(),
+    audioNodes: [],
   };
 
   public static status = SoundStatus;
@@ -68,7 +70,7 @@ export class Sound extends React.Component<SoundProps, SoundState> {
 
     this.handleTimeUpdate = this.handleTimeUpdate.bind(this);
     this.attachRef = this.attachRef.bind(this);
-    this.updateLastInChain = this.updateLastInChain.bind(this);
+    this.handleRegisterPlugin = this.handleRegisterPlugin.bind(this);
   }
 
   private attachRef(element: HTMLAudioElement): void {
@@ -84,25 +86,35 @@ export class Sound extends React.Component<SoundProps, SoundState> {
       const flatChildren = children.flat();
 
       return [
-        flatChildren.map((plugin, idx) => (
+        ...flatChildren.map((plugin, idx) => (
           <plugin.type
             {...plugin.props}
-            position={idx + 1}
-            key={idx + 1}
+            key={idx}
             audioContext={this.state.audioContext}
+            previousNode={this.state.audioNodes[idx]}
+            onRegister={this.handleRegisterPlugin}
           />
         )),
-        <Destination position={flatChildren.length + 1} key={flatChildren.length + 1} />,
+        <Destination
+          key={flatChildren.length}
+          audioContext={this.state.audioContext}
+          previousNode={this.state.audioNodes[flatChildren.length - 1]}
+        />,
       ];
     } else if (children) {
       return [
         <children.type
           {...children.props}
-          position={1}
           key={1}
           audioContext={this.state.audioContext}
+          previousNode={this.state.audioNodes[0]}
+          onRegister={this.handleRegisterPlugin}
         />,
-        <Destination position={2} key={2} />,
+        <Destination
+          key={2}
+          audioContext={this.state.audioContext}
+          previousNode={this.state.audioNodes[1]}
+        />,
       ];
     } else {
       return null;
@@ -113,10 +125,10 @@ export class Sound extends React.Component<SoundProps, SoundState> {
     return this.state.error && <span>{this.state.error}</span>;
   }
 
-  private updateLastInChain(lastInChain: any) {
+  private handleRegisterPlugin(plugin: AudioNode) {
     setTimeout(() => {
       this.setState({
-        lastInChain,
+        audioNodes: [...this.state.audioNodes, plugin],
       });
     });
   }
@@ -199,7 +211,7 @@ export class Sound extends React.Component<SoundProps, SoundState> {
       this.source.connect(this.state.audioContext.destination);
     } else {
       this.setState({
-        lastInChain: this.source,
+        audioNodes: [this.source],
       });
     }
 
@@ -221,7 +233,7 @@ export class Sound extends React.Component<SoundProps, SoundState> {
     const { url, onPlaying, onFinishedPlaying, onLoad, onLoading } = this.props;
 
     return (
-      <ContextProvider context={{ ...this.state, updateLastInChain: this.updateLastInChain }}>
+      <React.Fragment>
         <audio
           crossOrigin="anonymous"
           style={{ visibility: 'hidden' }}
@@ -234,7 +246,7 @@ export class Sound extends React.Component<SoundProps, SoundState> {
         />
         {this.renderError()}
         {this.renderPlugins()}
-      </ContextProvider>
+      </React.Fragment>
     );
   }
 }

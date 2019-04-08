@@ -1,11 +1,12 @@
 import { pluginFactory } from '../_lib/factory';
 import { Plugin } from '../Plugin';
-import { ContextState } from '../../AudioContext';
+import { ContextState } from '../_lib/type';
 import { memo } from 'react';
 
 interface AnalyserByFrequencyProps {
   frequencies: number[];
   onVisualisationData: (data: number[]) => void;
+  audioContext?: AudioContext;
 }
 
 export class AnalyserByFrequencyPlugin implements Plugin<AnalyserByFrequencyProps, AnalyserNode> {
@@ -45,6 +46,10 @@ export class AnalyserByFrequencyPlugin implements Plugin<AnalyserByFrequencyProp
     this.node.getByteFrequencyData(this.frequencyData);
 
     this.onVisualisationData(this.formatDataVizByFrequency(this.frequencyData, this.frequencies));
+  }
+
+  shouldNotUpdate(prevProps: AnalyserByFrequencyProps, nextProps: AnalyserByFrequencyProps) {
+    return !!nextProps.audioContext && nextProps.audioContext.state !== ContextState.RUNNING;
   }
 
   createNode(audioContext: AudioContext, props: AnalyserByFrequencyProps) {

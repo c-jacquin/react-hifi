@@ -1,8 +1,7 @@
-import { memo } from 'react';
 import { pluginFactory } from '../_lib/factory';
 import { Plugin } from '../Plugin';
 
-interface VolumePluginProps {
+export interface VolumePluginProps {
   /** a number between 0 and 100 */
   value: number;
 }
@@ -10,6 +9,10 @@ interface VolumePluginProps {
 export class VolumePlugin implements Plugin<VolumePluginProps, GainNode> {
   constructor() {
     this.createNode = this.createNode.bind(this);
+  }
+
+  shouldNotUpdate(prevProps: VolumePluginProps, nextProps: VolumePluginProps) {
+    return prevProps.value === nextProps.value;
   }
 
   createNode(audioContext: AudioContext, props: VolumePluginProps) {
@@ -24,7 +27,4 @@ export class VolumePlugin implements Plugin<VolumePluginProps, GainNode> {
   }
 }
 
-export default memo(
-  pluginFactory<VolumePluginProps, GainNode>(new VolumePlugin()),
-  (prevProps, nextProps) => prevProps.value === nextProps.value,
-);
+export default pluginFactory<VolumePluginProps, GainNode>(new VolumePlugin());

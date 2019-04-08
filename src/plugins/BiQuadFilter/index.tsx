@@ -1,5 +1,3 @@
-import { memo } from 'react';
-
 import { pluginFactory } from '../_lib/factory';
 import { Plugin } from '../Plugin';
 
@@ -21,6 +19,10 @@ interface BiQuadPluginProps {
 }
 
 export class BiQuadPlugin implements Plugin<BiQuadPluginProps, BiquadFilterNode> {
+  shouldNotUpdate(prevProps: BiQuadPluginProps, nextProps: BiQuadPluginProps) {
+    return prevProps.value === nextProps.value && prevProps.q === nextProps.q;
+  }
+
   createNode(
     audioContext: AudioContext,
     { value, freq, nextFreq, prevFreq, type, q }: BiQuadPluginProps,
@@ -49,7 +51,4 @@ export class BiQuadPlugin implements Plugin<BiQuadPluginProps, BiquadFilterNode>
   }
 }
 
-export default memo(
-  pluginFactory<BiQuadPluginProps, BiquadFilterNode>(new BiQuadPlugin()),
-  (prevProps, nextProps) => prevProps.value === nextProps.value && prevProps.q === nextProps.q,
-);
+export default pluginFactory<BiQuadPluginProps, BiquadFilterNode>(new BiQuadPlugin());

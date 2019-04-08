@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { ContextConsumer } from '../../AudioContext';
+import React, { useState, memo } from 'react';
 import { Plugin } from '../Plugin';
 
 export interface PluginState<N = AudioNode> {
@@ -7,42 +6,34 @@ export interface PluginState<N = AudioNode> {
   audioContext?: AudioContext;
 }
 
-export interface PluginProps {
-  position: number;
+export interface PluginProps<N> {
   audioContext?: AudioContext;
+  previousNode?: AudioNode;
+  onRegister?: (node: N) => void;
 }
 
 export function pluginFactory<P, N = AudioNode>({
   createNode,
   updateNode,
-}: Plugin<P, N>): React.FunctionComponent<P & PluginProps> {
-  return props => {
-    const [state, setState] = useState<PluginState<N>>({});
+  shouldNotUpdate = () => true,
+}: Plugin<P, N>): React.FunctionComponent<P & PluginProps<N>> {
+  return memo(
+    props => {
+      const [node, setNode] = useState<N>();
 
-    if (!state.node) {
-      let count = 0;
+      if (props.previousNode && props.audioContext && !node) {
+        const node = createNode(props.audioContext, props);
 
-      return (
-        <ContextConsumer>
-          {({ updateLastInChain, lastInChain, audioContext }) => {
-            count++;
+        props.previousNode.connect(node as any);
+        setNode(node);
+        props.onRegister && props.onRegister(node);
+      }
 
-            if (count === props.position) {
-              const node = createNode(audioContext, props);
-
-              setState({ node, audioContext });
-              updateLastInChain<N>(node);
-              lastInChain.connect(node as any);
-            }
-
-            return null;
-          }}
-        </ContextConsumer>
-      );
-    } else {
-      updateNode && updateNode(state.node, props, state.audioContext as AudioContext);
+      node && updateNode && props.audioContext && updateNode(node, props, props.audioContext);
 
       return null;
-    }
-  };
+    },
+    (prevProps, nextProps) =>
+      prevProps.previousNode === nextProps.previousNode && shouldNotUpdate(prevProps, nextProps),
+  );
 }
