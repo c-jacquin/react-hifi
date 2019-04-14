@@ -3,8 +3,7 @@
     ".(js|jsx)": "<rootDir>/node_modules/babel-jest",
     ".(ts|tsx)": "ts-jest"
   },
-  "testEnvironment": "node",
-  "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+  "testEnvironment": "jsdom",
   "moduleFileExtensions": [
     "ts",
     "tsx",
@@ -12,7 +11,9 @@
   ],
   "coveragePathIgnorePatterns": [
     "/node_modules/",
-    "/test/"
+    "/test/",
+    "/src/helpers/styleguide/",
+    "/src/index.ts"
   ],
   "coverageThreshold": {
     "global": {
@@ -26,7 +27,8 @@
     "src/**/*.{js,ts,tsx}"
   ],
   "setupFilesAfterEnv": [
-    "./test/mock/raf.ts",
-    "./test/mock/audio-api.ts"
+    "core-js",
+    "./__mocks__/audio-api.ts",
+    "./enzyme-setup.ts"
   ]
 }

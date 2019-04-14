@@ -1,4 +1,4 @@
-import { pluginFactory } from '../_lib/factory';
+import { pluginFactory } from '../_lib/plugin-factory';
 import { Plugin } from '../Plugin';
 
 export interface VolumePluginProps {
@@ -22,8 +22,8 @@ export class VolumePlugin implements Plugin<VolumePluginProps, GainNode> {
     return gainNode;
   }
 
-  updateNode({ gain }: GainNode, { value }: VolumePluginProps) {
-    gain.value = value / 100;
+  updateNode(node: GainNode, { value }: VolumePluginProps) {
+    node.gain.value = value / 100;
   }
 }
 

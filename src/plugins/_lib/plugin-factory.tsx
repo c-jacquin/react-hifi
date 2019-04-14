@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useEffect } from 'react';
 import { Plugin } from '../Plugin';
 
 export interface PluginState<N = AudioNode> {
@@ -19,15 +19,24 @@ export function pluginFactory<P, N = AudioNode>({
 }: Plugin<P, N>): React.FunctionComponent<P & PluginProps<N>> {
   return memo(
     props => {
+      let createdNode: N;
       const [node, setNode] = useState<N>();
 
       if (props.previousNode && props.audioContext && !node) {
-        const node = createNode(props.audioContext, props);
+        createdNode = createNode(props.audioContext, props);
 
-        props.previousNode.connect(node as any);
-        setNode(node);
-        props.onRegister && props.onRegister(node);
+        props.previousNode.connect(createdNode as any);
       }
+
+      useEffect(() => {
+        createdNode && setNode(createdNode);
+      });
+
+      useEffect(() => {
+        if (node) {
+          props.onRegister && props.onRegister(node);
+        }
+      }, [node]);
 
       node && updateNode && props.audioContext && updateNode(node, props, props.audioContext);
 

@@ -18,12 +18,15 @@ class AudioNodeMock {
 }
 
 class Analyser extends AudioNodeMock {
+  frequencyBinCount = 40;
   getByteFrequencyData(foo: Uint8Array) {
     foo = new Uint8Array(10);
   }
 }
 
 class AudioContextMock {
+  state: AudioContextState;
+
   createBiquadFilter() {
     return new AudioNodeMock();
   }
@@ -39,6 +42,18 @@ class AudioContextMock {
   createAnalyser() {
     return new Analyser();
   }
+
+  suspend() {
+    return Promise.resolve();
+  }
+
+  resume() {
+    return Promise.resolve();
+  }
+
+  close() {
+    return Promise.resolve();
+  }
 }
 
 class StereoPannerNodeMock extends AudioNodeMock {
@@ -52,5 +67,8 @@ class StereoPannerNodeMock extends AudioNodeMock {
   }
 }
 
+class BiquadFilterNode extends AudioNodeMock {}
+
 (global as any).AudioContext = AudioContextMock;
 (global as any).StereoPannerNode = StereoPannerNodeMock;
+(global as any).BiquadFilterNode = BiquadFilterNode;

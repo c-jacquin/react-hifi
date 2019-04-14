@@ -54,7 +54,13 @@ const Player = () => {
         <Volume value={state.volume} />
         <Stereo value={state.stereo} />
         {frequencies.map((freq, idx) => (
-          <BiQuadFilter value={eq[freq]} freq={freq} key={idx} />
+          <BiQuadFilter
+            prevFreq={frequencies[idx - 1]}
+            freq={freq}
+            nextFreq={frequencies[idx + 1]}
+            value={eq[freq]}
+            key={idx}
+          />
         ))}
         <AnalyserByFrequency
           frequencies={frequencies}

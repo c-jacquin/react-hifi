@@ -1,4 +1,4 @@
-import { pluginFactory } from '../_lib/factory';
+import { pluginFactory } from '../_lib/plugin-factory';
 import { Plugin } from '../Plugin';
 
 interface BiQuadPluginProps {

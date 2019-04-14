@@ -1,4 +1,4 @@
-import { pluginFactory } from '../_lib/factory';
+import { pluginFactory } from '../_lib/plugin-factory';
 import { Plugin } from '../Plugin';
 import { ContextState } from '../_lib/type';
 import { memo } from 'react';
@@ -23,7 +23,7 @@ export class AnalyserByFrequencyPlugin implements Plugin<AnalyserByFrequencyProp
     this.handleVisualizationChange = this.handleVisualizationChange.bind(this);
   }
 
-  private formatDataVizByFrequency(data: Uint8Array, frequencies: number[] = []): number[] {
+  private formatDataVizByFrequency(data: Uint8Array, frequencies: number[]): number[] {
     const values = [];
     const HERTZ_ITER = 23.4;
     let currentIndex = 0;
@@ -53,42 +53,32 @@ export class AnalyserByFrequencyPlugin implements Plugin<AnalyserByFrequencyProp
   }
 
   createNode(audioContext: AudioContext, props: AnalyserByFrequencyProps) {
-    try {
-      this.node = audioContext.createAnalyser();
-      this.onVisualisationData = props.onVisualisationData;
-      this.frequencies = props.frequencies;
+    this.node = audioContext.createAnalyser();
+    this.onVisualisationData = props.onVisualisationData;
+    this.frequencies = props.frequencies;
 
-      this.node.fftSize = 32768;
-      this.frequencyData = new Uint8Array(this.node.frequencyBinCount);
+    this.node.fftSize = 32768;
+    this.frequencyData = new Uint8Array(this.node.frequencyBinCount);
 
-      return this.node;
-    } catch (err) {
-      console.error(err);
-      throw new Error(`Error in AnalyserByFrequency`);
-    }
+    return this.node;
   }
 
   updateNode(node: AnalyserNode, props: AnalyserByFrequencyProps, audioContext: AudioContext) {
-    try {
-      if (this.previousContextState !== audioContext.state) {
-        this.previousContextState = audioContext.state as ContextState;
+    if (this.previousContextState !== audioContext.state) {
+      this.previousContextState = audioContext.state as ContextState;
 
-        switch (audioContext.state) {
-          case ContextState.SUSPENDED:
-            this.animationFrame && cancelAnimationFrame(this.animationFrame);
-            break;
-          case ContextState.CLOSED:
-            this.animationFrame && cancelAnimationFrame(this.animationFrame);
-            this.onVisualisationData(props.frequencies.map(() => 0));
-            break;
-          case ContextState.RUNNING:
-            this.handleVisualizationChange();
-            break;
-        }
+      switch (audioContext.state) {
+        case ContextState.SUSPENDED:
+          this.animationFrame && cancelAnimationFrame(this.animationFrame);
+          break;
+        case ContextState.CLOSED:
+          this.animationFrame && cancelAnimationFrame(this.animationFrame);
+          this.onVisualisationData(props.frequencies.map(() => 0));
+          break;
+        case ContextState.RUNNING:
+          this.handleVisualizationChange();
+          break;
       }
-    } catch (err) {
-      console.error(err);
-      throw new Error(`Error in AnalyserByFrequency`);
     }
   }
 }
