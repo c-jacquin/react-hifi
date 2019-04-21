@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Sound } from 'sound';
-import { Volume, Stereo, BiQuadFilter, AnalyserByFrequency } from 'plugins';
+import { Volume, Stereo, BiQuadFilter, AnalyserByFrequency, Equalizer as EqPlugin } from 'plugins';
 import {
   BasicControls,
   VolumeControl,
@@ -37,7 +37,6 @@ const Player = () => {
 
   const [dataViz, setDataViz] = useState([]);
 
-
   const frequencies = Object.keys(eq);
 
   return (
@@ -53,15 +52,7 @@ const Player = () => {
       >
         <Volume value={state.volume} />
         <Stereo value={state.stereo} />
-        {frequencies.map((freq, idx) => (
-          <BiQuadFilter
-            prevFreq={frequencies[idx - 1]}
-            freq={freq}
-            nextFreq={frequencies[idx + 1]}
-            value={eq[freq]}
-            key={idx}
-          />
-        ))}
+        <EqPlugin data={eq} />
         <AnalyserByFrequency
           frequencies={frequencies}
           onVisualisationData={setDataViz}

@@ -12,7 +12,7 @@ export interface PluginProps<N> {
   onRegister?: (node: N) => void;
 }
 
-export function pluginFactory<P, N = AudioNode>({
+export function pluginFactory<P, N = AudioNode | AudioNode[]>({
   createNode,
   updateNode,
   shouldNotUpdate = () => true,
@@ -25,7 +25,19 @@ export function pluginFactory<P, N = AudioNode>({
       if (props.previousNode && props.audioContext && !node) {
         createdNode = createNode(props.audioContext, props);
 
-        props.previousNode.connect(createdNode as any);
+        if (Array.isArray(createdNode)) {
+          let lastInChain = createdNode[0];
+          props.previousNode.connect(lastInChain);
+          console.log(props.previousNode, lastInChain);
+
+          for (let i = 1; i < createdNode.length; i++) {
+            console.log(lastInChain, createdNode[i]);
+            lastInChain.connect(createdNode[i]);
+            lastInChain = createdNode[i];
+          }
+        } else {
+          props.previousNode.connect(createdNode as any);
+        }
       }
 
       useEffect(() => {
@@ -34,7 +46,7 @@ export function pluginFactory<P, N = AudioNode>({
 
       useEffect(() => {
         if (node) {
-          props.onRegister && props.onRegister(node);
+          props.onRegister && props.onRegister(Array.isArray(node) ? node[node.length - 1] : node);
         }
       }, [node]);
 

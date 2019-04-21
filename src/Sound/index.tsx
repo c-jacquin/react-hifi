@@ -93,7 +93,6 @@ export class Sound extends React.Component<SoundProps, SoundState> {
             audioContext={this.state.audioContext}
             previousNode={this.state.audioNodes[idx]}
             onRegister={this.handleRegisterPlugin}
-            node={this.state.audioNodes[idx + 1]}
           />
         )),
         <Destination
@@ -110,7 +109,6 @@ export class Sound extends React.Component<SoundProps, SoundState> {
           audioContext={this.state.audioContext}
           previousNode={this.state.audioNodes[0]}
           onRegister={this.handleRegisterPlugin}
-          node={this.state.audioNodes[1]}
         />,
         <Destination
           key={2}

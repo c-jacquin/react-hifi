@@ -9,7 +9,7 @@ describe('BiQuadFilter plugin', () => {
   test('should register the plugin', () => {
     const testRenderer = TestRenderer.create(
       <Sound url="http://foo.ogg" playStatus={Sound.status.PAUSED}>
-        <BiQuadFilter freq={10} value={4} />
+        <BiQuadFilter freq={10} value={4} type="allpass" />
       </Sound>,
       options,
     );
@@ -21,7 +21,7 @@ describe('BiQuadFilter plugin', () => {
   test('should update the biquadfilter node gain value when props change', () => {
     const testRenderer = TestRenderer.create(
       <Sound url="http://foo.ogg" playStatus={Sound.status.PAUSED}>
-        <BiQuadFilter freq={100} value={0} />
+        <BiQuadFilter freq={100} value={0} type="allpass" />
       </Sound>,
       options,
     );
@@ -30,7 +30,7 @@ describe('BiQuadFilter plugin', () => {
 
     testRenderer.update(
       <Sound url="http://foo.ogg" playStatus={Sound.status.PAUSED}>
-        <BiQuadFilter freq={100} value={1} />
+        <BiQuadFilter freq={100} value={1} type="allpass" />
       </Sound>,
     );
 
