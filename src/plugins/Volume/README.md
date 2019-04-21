@@ -18,7 +18,7 @@ const Player = () => {
   return (
     <div>
       <Sound
-        url="http://localhost:8080/demo.mp3"
+        url="demo.mp3"
         playStatus={state.status}
         position={state.position}
         onFinishedPlaying={() => setState({ ...state, status: Sound.status.STOPPED })}

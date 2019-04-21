@@ -22,6 +22,7 @@ export function pluginFactory<P, N = AudioNode | AudioNode[]>({
       let createdNode: N;
       const [node, setNode] = useState<N>();
 
+      // executed only at first render
       if (props.previousNode && props.audioContext && !node) {
         createdNode = createNode(props.audioContext, props);
 

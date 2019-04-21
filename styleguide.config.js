@@ -12,23 +12,23 @@ module.exports = {
   resolver: require('react-docgen').resolver.findAllComponentDefinitions,
   propsParser: require('react-docgen-typescript').withCustomConfig('./tsconfig.json').parse,
   sections: [
-    // {
-    //   name: 'Introduction',
-    //   content: 'src/README.md'
-    // },
-    // {
-    //   name: 'Styleguide',
-    //   components: 'src/Sound/**/*.tsx',
-    //   exampleMode: 'expand',
-    //   usageMode: 'expand'
-    // },
-    // {
-    //   name: 'Plugins',
-    //   content: 'src/plugins/README.md',
-    //   components: 'src/plugins/**/*.tsx',
-    //   exampleMode: 'collapse',
-    //   usageMode: 'collapse'
-    // },
+    {
+      name: 'Introduction',
+      content: 'src/README.md'
+    },
+    {
+      name: 'Styleguide',
+      components: 'src/Sound/**/*.tsx',
+      exampleMode: 'expand',
+      usageMode: 'expand'
+    },
+    {
+      name: 'Plugins',
+      content: 'src/plugins/README.md',
+      components: 'src/plugins/**/*.tsx',
+      exampleMode: 'collapse',
+      usageMode: 'collapse'
+    },
     {
       name: 'Full Example',
       content: 'src/Summary.md',
