@@ -28,10 +28,8 @@ export function pluginFactory<P, N = AudioNode | AudioNode[]>({
         if (Array.isArray(createdNode)) {
           let lastInChain = createdNode[0];
           props.previousNode.connect(lastInChain);
-          console.log(props.previousNode, lastInChain);
 
           for (let i = 1; i < createdNode.length; i++) {
-            console.log(lastInChain, createdNode[i]);
             lastInChain.connect(createdNode[i]);
             lastInChain = createdNode[i];
           }

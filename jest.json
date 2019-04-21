@@ -12,7 +12,7 @@
   "coveragePathIgnorePatterns": [
     "/node_modules/",
     "/test/",
-    "/src/helpers/styleguide/",
+    "/src/helpers/",
     "/src/index.ts"
   ],
   "coverageThreshold": {

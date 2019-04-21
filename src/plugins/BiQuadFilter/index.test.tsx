@@ -36,4 +36,23 @@ describe('BiQuadFilter plugin', () => {
 
     expect((instance as any).state.audioNodes[1].gain.value).toBe(1);
   });
+
+  test('should update the biquadfilter node Q value when props q change', () => {
+    const testRenderer = TestRenderer.create(
+      <Sound url="http://foo.ogg" playStatus={Sound.status.PAUSED}>
+        <BiQuadFilter freq={100} value={0} q={3} type="allpass" />
+      </Sound>,
+      options,
+    );
+
+    const instance = testRenderer.getInstance();
+
+    testRenderer.update(
+      <Sound url="http://foo.ogg" playStatus={Sound.status.PAUSED}>
+        <BiQuadFilter freq={100} value={0} q={34} type="allpass" />
+      </Sound>,
+    );
+
+    expect((instance as any).state.audioNodes[1].Q.value).toBe(34);
+  });
 });
