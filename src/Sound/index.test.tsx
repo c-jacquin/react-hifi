@@ -97,12 +97,19 @@ describe('Sound Component', () => {
     expect(testRenderer).toBeDefined();
   });
 
-  test('should display an error message if an error is throw', () => {
+  test('should call onError props if an error is throw', () => {
     const error = new Error('test error');
     const UselessPlugin = () => null;
+    const props = {
+      url: 'http://foo.ogg',
+      playStatus: Sound.status.PAUSED,
+      onError: () => {},
+    };
+
+    const onErrorSpy = jest.spyOn(props, 'onError');
 
     const wrapper = mount(
-      <Sound url="http://foo.ogg" playStatus={Sound.status.PAUSED}>
+      <Sound {...props}>
         <UselessPlugin />
       </Sound>,
     );
@@ -111,7 +118,7 @@ describe('Sound Component', () => {
 
     wrapper.find(UselessPlugin).simulateError(error);
 
-    expect(wrapper.find(Sound).text()).toBe(error.message);
     expect(spy).toHaveBeenCalled();
+    expect(onErrorSpy).toHaveBeenCalled();
   });
 });

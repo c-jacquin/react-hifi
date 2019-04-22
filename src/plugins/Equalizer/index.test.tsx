@@ -22,7 +22,6 @@ describe('Equalizer plugin', () => {
       </Sound>,
     );
 
-    console.log((instance as any).state.audioNodes);
     expect((instance as any).state.audioNodes.length).toBe(2);
   });
 });

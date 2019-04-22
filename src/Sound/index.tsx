@@ -37,13 +37,13 @@ export interface SoundProps {
   onLoading?: (event: any) => void;
   /** trigger when the file is ready to play */
   onLoad?: (event: any) => void;
+  /** trigger when an error is thrown */
+  onError?: (error: Error) => void;
 
   children?: ReactElement[] | ReactElement;
 }
 
 export interface SoundState {
-  /** message to display in case of error */
-  error?: string;
   /** html5 AudioContext instance */
   audioContext: AudioContext;
   /** the AudioNode register by childrens  */
@@ -119,10 +119,6 @@ export class Sound extends React.Component<SoundProps, SoundState> {
     } else {
       return null;
     }
-  }
-
-  private renderError() {
-    return this.state.error && <span>{this.state.error}</span>;
   }
 
   private handleRegisterPlugin(plugin: AudioNode) {
@@ -224,7 +220,7 @@ export class Sound extends React.Component<SoundProps, SoundState> {
 
   componentDidCatch(err: Error) {
     this.state.audioContext.close().catch(console.error);
-    this.setState({ error: err.message });
+    this.props.onError && this.props.onError(err);
   }
 
   render() {
@@ -242,7 +238,6 @@ export class Sound extends React.Component<SoundProps, SoundState> {
           onLoadStart={onLoading}
           onCanPlay={onLoad}
         />
-        {this.renderError()}
         {this.renderPlugins()}
       </React.Fragment>
     );
