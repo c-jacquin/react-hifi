@@ -1,4 +1,3 @@
-import React from 'react';
 import { pluginFactory } from '../_lib/plugin-factory';
 import { Plugin } from '../Plugin';
 import { ContextState } from '../_lib/type';
@@ -83,8 +82,6 @@ export class AnalyserByFrequencyPlugin implements Plugin<AnalyserByFrequencyProp
   }
 }
 
-export default React.memo(
-  pluginFactory<AnalyserByFrequencyProps, AnalyserNode>(new AnalyserByFrequencyPlugin()),
-  (prevProps, nextProps) =>
-    !!nextProps.audioContext && nextProps.audioContext.state !== ContextState.RUNNING,
+export default pluginFactory<AnalyserByFrequencyProps, AnalyserNode>(
+  new AnalyserByFrequencyPlugin(),
 );
