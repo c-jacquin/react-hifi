@@ -19,28 +19,25 @@ export function pluginFactory<P, N = AudioNode | AudioNode[]>({
 }: Plugin<P, N>): React.FunctionComponent<P & PluginProps<N>> {
   return memo(
     props => {
-      let createdNode: N;
       const [node, setNode] = useState<N>();
 
-      // executed only at first render
-      if (props.previousNode && props.audioContext && !node) {
-        createdNode = createNode(props.audioContext, props);
-
-        if (Array.isArray(createdNode)) {
-          let lastInChain = createdNode[0];
-          props.previousNode.connect(lastInChain);
-
-          for (let i = 1; i < createdNode.length; i++) {
-            lastInChain.connect(createdNode[i]);
-            lastInChain = createdNode[i];
-          }
-        } else {
-          props.previousNode.connect(createdNode as any);
-        }
-      }
-
       useEffect(() => {
-        createdNode && setNode(createdNode);
+        if (props.previousNode && props.audioContext && !node) {
+          const createdNode = createNode(props.audioContext, props);
+
+          if (Array.isArray(createdNode)) {
+            let lastInChain = createdNode[0];
+            props.previousNode.connect(lastInChain);
+
+            for (let i = 1; i < createdNode.length; i++) {
+              lastInChain.connect(createdNode[i]);
+              lastInChain = createdNode[i];
+            }
+          } else {
+            props.previousNode.connect(createdNode as any);
+          }
+          setNode(createdNode);
+        }
       });
 
       useEffect(() => {
