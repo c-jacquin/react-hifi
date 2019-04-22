@@ -1,5 +1,3 @@
-## Full Example
-
 ```jsx
 import React, { useState } from 'react';
 import { Bar } from 'react-chartjs-2';

@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  title: 'react-sound-html5',
+  title: 'react-hifi',
   components: 'src/**/*.tsx',
   ignore: [
     'src/**/helpers/**/*.tsx',

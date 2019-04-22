@@ -1,4 +1,4 @@
-# React-sound-html5
+# React-hifi
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![Travis](https://img.shields.io/travis/charjac/react-sound-html5.svg)](https://travis-ci.org/charjac/react-sound-html5)
@@ -27,8 +27,7 @@ import {
   Volume,
   Stereo,
   BiQuadFilter,
-  Destination
-} from 'react-sound-html5';
+} from 'react-hifi';
 
 
 render(

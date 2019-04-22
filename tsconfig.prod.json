@@ -1,4 +1,9 @@
 {
-  "extends": "tsconfig.json",
-  "exclude": ["src/**/*.test.tsx"]
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "src/**/*.test.tsx",
+    "src/helpers/styleguide/**/*.ts",
+    "src/helpers/styleguide/**/*.tsx",
+    "__mocks__/**/*.ts"
+  ]
 }

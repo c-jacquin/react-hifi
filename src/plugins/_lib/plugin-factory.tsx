@@ -1,5 +1,7 @@
-import React, { useState, memo, useEffect } from 'react';
+import React from 'react';
 import { Plugin } from '../Plugin';
+
+const { memo, useState, useEffect } = React;
 
 export interface PluginState<N = AudioNode> {
   node?: N;
