@@ -1,5 +1,11 @@
 A plugin is simply an object wich match the interface below passed to pluginFactory.
-This library give you access to a few presets.
+This library give you access to a few basic plugin :
+ - Volume
+ - Stereo
+ - BiQuadFilter
+ - Equalizer
+ - AnalyserByFrequency (visualisation)
+
 Plugins can do everything allowed by the [html5 audio api](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext).
 
 ```ts
