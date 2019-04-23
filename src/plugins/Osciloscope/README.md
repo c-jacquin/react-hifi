@@ -17,7 +17,6 @@ const Player = () => {
 
   const canvasElement = useRef();
 
-  console.log(canvasElement);
   return (
     <div>
       <Sound

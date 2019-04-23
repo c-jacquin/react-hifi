@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useRef } from 'react';
 
 interface VerticalSliderProps {
   value: number;
@@ -10,23 +10,32 @@ export const VerticalSlider: React.FunctionComponent<VerticalSliderProps> = ({
   value,
   onChange,
   style,
-}) => (
-  <input
-    type="range"
-    min={-12}
-    max={12}
-    step={0.1}
-    value={Number(value)}
-    onChange={onChange}
-    style={{
-      ...style,
-      WebkitAppearance: 'slider-vertical',
-      width: '8px',
-      height: '175px',
-      padding: '0 5px',
-    }}
-  />
-);
+}) => {
+  const ref = useRef(null);
+
+  if (ref && ref.current && (ref as any).current.getAttribute('orient') !== 'vertical') {
+    (ref as any).current.setAttribute('orient', 'vertical');
+  }
+
+  return (
+    <input
+      type="range"
+      min={-12}
+      max={12}
+      step={0.1}
+      value={Number(value)}
+      onChange={onChange}
+      ref={ref}
+      style={{
+        ...style,
+        WebkitAppearance: 'slider-vertical',
+        width: '8px',
+        height: '175px',
+        padding: '0 5px',
+      }}
+    />
+  );
+};
 
 interface EqualizerProps {
   onChange: (foo: any) => void;

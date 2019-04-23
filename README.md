@@ -47,8 +47,9 @@ This library give you access to a few basic plugin :
  - Volume
  - Stereo
  - BiQuadFilter
- - Equalizer
+ - Equalizer (basicaly an array of BiQuadFilter)
  - AnalyserByFrequency (visualisation)
+ - Oscilator (visualisation)
 
 Plugins can do everything allowed by the [html5 audio api](https://developer.mozilla.org/en-US/docs/Web/API/AudioContext).
 
