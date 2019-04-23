@@ -22,10 +22,14 @@ class Analyser extends AudioNodeMock {
   getByteFrequencyData(foo: Uint8Array) {
     foo = new Uint8Array(10);
   }
+
+  getByteTimeDomainData(foo: Uint8Array) {
+    foo = new Uint8Array(10);
+  }
 }
 
 class AudioContextMock {
-  state: AudioContextState;
+  state: AudioContextState = 'suspended';
 
   createBiquadFilter() {
     return new AudioNodeMock();
@@ -44,14 +48,17 @@ class AudioContextMock {
   }
 
   suspend() {
+    this.state = 'suspended';
     return Promise.resolve();
   }
 
   resume() {
+    this.state = 'running';
     return Promise.resolve();
   }
 
   close() {
+    this.state = 'closed';
     return Promise.resolve();
   }
 }

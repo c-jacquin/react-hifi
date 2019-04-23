@@ -1,13 +1,13 @@
-## React-Sound-Html5
+## React-hifi
 
 A composable Abstraction for AudioContext API with a easy to use react API.
 
 ### Installation
 
 ```bash
-npm i react-sound-html5
+npm i react-hifi
 # or
-yarn add react-sound-html5
+yarn add react-hifi
 ```
 
 ```tsx

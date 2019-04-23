@@ -3,7 +3,7 @@
     ".(js|jsx)": "<rootDir>/node_modules/babel-jest",
     ".(ts|tsx)": "ts-jest"
   },
-  "testEnvironment": "jsdom",
+  "testEnvironment": "jest-environment-jsdom-fourteen",
   "moduleFileExtensions": [
     "ts",
     "tsx",
