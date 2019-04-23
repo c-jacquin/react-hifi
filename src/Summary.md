@@ -17,7 +17,8 @@ const Player = () => {
     volume: 100,
     stereo: 0,
     loading: false,
-    position: 0
+    position: 0,
+    displayViz: false
   });
 
   const [eq, setEq] = useState({
@@ -53,9 +54,10 @@ const Player = () => {
         <EqPlugin data={eq} />
         <AnalyserByFrequency
           frequencies={frequencies}
-          onVisualisationData={setDataViz}
+          onVisualisationData={state.displayViz && setDataViz}
         />
       </Sound>
+      <input type="checkbox" checked={state.displayViz} onChange={() => setState({ ...state, displayViz: !state.displayViz})} />
       <BasicControls
         onPlay={() => setState({ ...state, status: Sound.status.PLAYING })}
         onPause={() => setState({ ...state, status: Sound.status.PAUSED })}

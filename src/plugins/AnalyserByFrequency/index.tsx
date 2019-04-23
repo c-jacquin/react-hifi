@@ -63,6 +63,17 @@ export class AnalyserByFrequencyPlugin implements Plugin<AnalyserByFrequencyProp
   }
 
   updateNode(node: AnalyserNode, props: AnalyserByFrequencyProps, audioContext: AudioContext) {
+    if (!this.onVisualisationData && props.onVisualisationData) {
+      this.onVisualisationData = props.onVisualisationData;
+      this.handleVisualizationChange();
+      return;
+    } else if (this.onVisualisationData && !props.onVisualisationData) {
+      this.onVisualisationData(props.frequencies.map(() => 0));
+      this.onVisualisationData = props.onVisualisationData;
+      this.animationFrame && cancelAnimationFrame(this.animationFrame);
+      return;
+    }
+
     if (this.previousContextState !== audioContext.state) {
       this.previousContextState = audioContext.state as ContextState;
 
@@ -75,7 +86,8 @@ export class AnalyserByFrequencyPlugin implements Plugin<AnalyserByFrequencyProp
           this.onVisualisationData(props.frequencies.map(() => 0));
           break;
         case ContextState.RUNNING:
-          this.handleVisualizationChange();
+          console.log(this.onVisualisationData);
+          this.onVisualisationData && this.handleVisualizationChange();
           break;
       }
     }
