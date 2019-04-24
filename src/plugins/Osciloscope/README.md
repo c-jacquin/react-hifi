@@ -16,11 +16,35 @@ const Player = () => {
   });
 
   const canvasElement = useRef();
+  let ctx;
 
+  const handleDataViz = (data) => {
+    if (!ctx) {
+      ctx = canvasElement.current.getContext('2d');
+    }
+
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvasElement.current.width, canvasElement.current.height);
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'green';
+
+    ctx.beginPath();
+
+    const [x, y] = data.pop();
+    ctx.moveTo(x, y);
+
+    data.forEach(([x, y]) => ctx.lineTo(x, y));
+
+    ctx.lineTo(canvasElement.current.width, canvasElement.current.height / 2);
+    ctx.stroke();
+  };
+
+  console.log(canvasElement);
   return (
     <div>
       <Sound
-        url="http://localhost:8080/demo.mp3"
+        url="demo.mp3"
         playStatus={state.status}
         position={state.position}
         onFinishedPlaying={() => setState({ ...state, status: Sound.status.STOPPED })}
@@ -30,6 +54,9 @@ const Player = () => {
       >
         <Osciloscope
           canvas={canvasElement.current}
+          onVisualisationData={handleDataViz}
+          height={canvasElement.current && canvasElement.current.height}
+          width={canvasElement.current && canvasElement.current.width}
         />
       </Sound>
       <BasicControls

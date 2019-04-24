@@ -86,7 +86,6 @@ export class AnalyserByFrequencyPlugin implements Plugin<AnalyserByFrequencyProp
           this.onVisualisationData(props.frequencies.map(() => 0));
           break;
         case ContextState.RUNNING:
-          console.log(this.onVisualisationData);
           this.onVisualisationData && this.handleVisualizationChange();
           break;
       }
