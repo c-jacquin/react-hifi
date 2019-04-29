@@ -40,7 +40,6 @@ const Player = () => {
     ctx.stroke();
   };
 
-  console.log(canvasElement);
   return (
     <div>
       <Sound
@@ -53,7 +52,6 @@ const Player = () => {
         onPlaying={data => setState({ ...state, ...data  })}
       >
         <Osciloscope
-          canvas={canvasElement.current}
           onVisualisationData={handleDataViz}
           height={canvasElement.current && canvasElement.current.height}
           width={canvasElement.current && canvasElement.current.width}
