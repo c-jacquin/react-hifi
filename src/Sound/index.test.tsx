@@ -121,4 +121,14 @@ describe('Sound Component', () => {
     expect(spy).toHaveBeenCalled();
     expect(onErrorSpy).toHaveBeenCalled();
   });
+
+  test('should return true from shouldUpdatePosition for position=0', () => {
+    const testRenderer = TestRenderer.create(
+      <Sound url="http://foo.ogg" playStatus={Sound.status.PAUSED} position={42} />,
+      options,
+    );
+    const instance = testRenderer.getInstance();
+    expect((instance as any).shouldUpdatePosition({ position: 1 })).toBe(true);
+    expect((instance as any).shouldUpdatePosition({ position: 0 })).toBe(true);
+  });
 });
