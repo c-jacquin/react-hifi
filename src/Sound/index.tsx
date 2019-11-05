@@ -151,8 +151,8 @@ export class Sound extends React.Component<SoundProps, SoundState> {
     }
   }
 
-  private shouldUpdatePosition({ position: nextPosition }: SoundProps): boolean {
-    const { position } = this.props;
+  private shouldUpdatePosition({ position }: SoundProps): boolean {
+    const { position: nextPosition } = this.props;
 
     if (position && nextPosition) {
       const dif = nextPosition - position;
@@ -186,15 +186,15 @@ export class Sound extends React.Component<SoundProps, SoundState> {
     this.audio.currentTime = 0;
   }
 
-  componentWillReceiveProps(nextProps: SoundProps) {
+  componentDidUpdate(prevProps: SoundProps) {
     const { playStatus, url } = this.props;
 
-    if ((nextProps.playStatus && playStatus !== nextProps.playStatus) || url !== nextProps.url) {
-      this.setPlayerState(nextProps.playStatus);
+    if ((playStatus && prevProps.playStatus !== playStatus) || url !== prevProps.url) {
+      this.setPlayerState(playStatus);
     }
 
-    if (this.shouldUpdatePosition(nextProps)) {
-      this.setPosition(nextProps.position as number);
+    if (this.shouldUpdatePosition(prevProps)) {
+      this.setPosition(this.props.position as number);
     }
   }
 
