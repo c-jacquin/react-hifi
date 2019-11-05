@@ -9,7 +9,7 @@ interface EqualizerProps {
 
 export class EqualizerPlugin implements Plugin<EqualizerProps, BiquadFilterNode[]> {
   shouldNotUpdate(prevProps: EqualizerProps, nextProps: EqualizerProps) {
-    return shallowObject(prevProps.data, nextProps.data);
+    return shallowObject(prevProps.data, nextProps.data) && prevProps.preAmp === nextProps.preAmp;
   }
 
   createNode(audioContext: AudioContext, { data, preAmp = 0 }: EqualizerProps): BiquadFilterNode[] {
