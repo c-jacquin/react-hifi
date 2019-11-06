@@ -22,6 +22,12 @@ describe('Equalizer plugin', () => {
       </Sound>,
     );
 
+    testRenderer.update(
+      <Sound url="http://foo.ogg" playStatus={Sound.status.PAUSED}>
+        <Equalizer data={{ 90: 4, 160: 10, 300: 10 }} />
+      </Sound>,
+    );
+
     expect((instance as any).state.audioNodes.length).toBe(2);
   });
 });

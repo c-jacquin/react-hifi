@@ -154,7 +154,7 @@ export class Sound extends React.Component<SoundProps, SoundState> {
   private shouldUpdatePosition({ position }: SoundProps): boolean {
     const { position: nextPosition } = this.props;
 
-    if (position && (nextPosition || nextPosition === 0)) {
+    if ((position || position === 0) && (nextPosition || nextPosition === 0)) {
       const dif = nextPosition - position;
 
       return position > nextPosition || dif > 1;
