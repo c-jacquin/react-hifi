@@ -71,6 +71,7 @@ export class Sound extends React.Component<SoundProps, SoundState> {
     this.handleTimeUpdate = this.handleTimeUpdate.bind(this);
     this.attachRef = this.attachRef.bind(this);
     this.handleRegisterPlugin = this.handleRegisterPlugin.bind(this);
+    this.handleError = this.handleError.bind(this);
   }
 
   private attachRef(element: HTMLAudioElement): void {
@@ -168,22 +169,20 @@ export class Sound extends React.Component<SoundProps, SoundState> {
   }
 
   private play(): void {
-    this.state.audioContext
-      .resume()
-      .then(() => this.audio.play())
-      .catch(console.error);
+    this.state.audioContext.resume().then(() => this.audio.play());
   }
 
   private pause(): void {
-    this.state.audioContext
-      .suspend()
-      .then(() => this.audio.pause())
-      .catch(console.error);
+    this.state.audioContext.suspend().then(() => this.audio.pause());
   }
 
   private stop(): void {
     this.pause();
     this.audio.currentTime = 0;
+  }
+
+  private handleError(evt: any) {
+    this.props.onError && this.props.onError(new Error('Audio error'));
   }
 
   componentDidUpdate(prevProps: SoundProps) {
@@ -237,6 +236,7 @@ export class Sound extends React.Component<SoundProps, SoundState> {
           onEnded={onFinishedPlaying}
           onLoadStart={onLoading}
           onCanPlay={onLoad}
+          onError={this.handleError}
         />
         {this.renderPlugins()}
       </React.Fragment>
