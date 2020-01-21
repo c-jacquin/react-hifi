@@ -19,12 +19,17 @@ const Destination = pluginFactory<{}, AudioDestinationNode>({
   },
 });
 
+interface Stream {
+  type: string;
+  url: string;
+}
+
 /**
  * Sound Props
  */
 export interface SoundProps {
   /** the url of the stream to play */
-  url: string;
+  url: string | Stream[];
   /** PLAYING, PAUSED or STOPPED */
   playStatus?: SoundStatus;
   /** the position in second */
@@ -230,14 +235,16 @@ export class Sound extends React.Component<SoundProps, SoundState> {
         <audio
           crossOrigin="anonymous"
           style={{ visibility: 'hidden' }}
-          src={url}
+          src={Array.isArray(url) ? undefined : url}
           ref={this.attachRef}
           onTimeUpdate={onPlaying ? this.handleTimeUpdate : undefined}
           onEnded={onFinishedPlaying}
           onLoadStart={onLoading}
           onCanPlay={onLoad}
           onError={this.handleError}
-        />
+        >
+          {Array.isArray(url) && url.map(({ url, type }) => <source type={type} src={url} />)}
+        </audio>
         {this.renderPlugins()}
       </React.Fragment>
     );
