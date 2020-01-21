@@ -219,11 +219,11 @@ export class Sound extends React.Component<SoundProps, SoundState> {
   }
 
   componentWillUnmount() {
-    this.state.audioContext.close().catch(console.error);
+    this.state.audioContext.close();
   }
 
   componentDidCatch(err: Error) {
-    this.state.audioContext.close().catch(console.error);
+    this.state.audioContext.close();
     this.props.onError && this.props.onError(err);
   }
 
@@ -243,7 +243,8 @@ export class Sound extends React.Component<SoundProps, SoundState> {
           onCanPlay={onLoad}
           onError={this.handleError}
         >
-          {Array.isArray(url) && url.map(({ url, type }) => <source type={type} src={url} />)}
+          {Array.isArray(url) &&
+            url.map(({ url, type }, index) => <source key={index} type={type} src={url} />)}
         </audio>
         {this.renderPlugins()}
       </React.Fragment>

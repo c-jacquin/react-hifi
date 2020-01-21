@@ -1,5 +1,5 @@
 /* tslint:disable:no-empty */
-import React from 'react';
+import React, { ReactElement } from 'react';
 import TestRenderer from 'react-test-renderer';
 import { mount } from 'enzyme';
 
@@ -130,5 +130,28 @@ describe('Sound Component', () => {
     const instance = testRenderer.getInstance();
     expect((instance as any).shouldUpdatePosition({ position: 1 })).toBe(true);
     expect((instance as any).shouldUpdatePosition({ position: 0 })).toBe(true);
+    testRenderer.update(
+      <Sound url="http://foo.ogg" playStatus={Sound.status.PAUSED} position={0} />,
+    );
+    expect((instance as any).shouldUpdatePosition({ position: 1 })).toBe(true);
+  });
+
+  test('should render source children when url is an array', () => {
+    const sources = [
+      { url: 'http://foo.ogg', type: 'audio/ogg' },
+      { url: 'http://foo.mp3', type: 'audio/mp3' },
+    ];
+    const mounted = mount(
+      <Sound url={sources} playStatus={Sound.status.PAUSED}>
+        <Volume value={5} />
+      </Sound>,
+    );
+
+    expect(
+      mounted
+        .render()
+        .get(0)
+        .children.filter(({ name }: any) => name === 'source').length,
+    ).toEqual(sources.length);
   });
 });

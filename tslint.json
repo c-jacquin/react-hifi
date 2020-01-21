@@ -5,6 +5,7 @@
   ],
   "rulesDirectory": ["tslint-plugin-prettier"],
   "rules": {
-    "prettier": true
+    "prettier": true,
+    "no-floating-promises": false
   }
 }
