@@ -97,31 +97,6 @@ describe('Sound Component', () => {
     expect(testRenderer).toBeDefined();
   });
 
-  test('should call onError props if an error is throw', () => {
-    const error = new Error('test error');
-    const UselessPlugin = () => null;
-    const props = {
-      url: 'http://foo.ogg',
-      playStatus: Sound.status.PAUSED,
-      onError: () => {},
-    };
-
-    const onErrorSpy = jest.spyOn(props, 'onError');
-
-    const wrapper = mount(
-      <Sound {...props}>
-        <UselessPlugin />
-      </Sound>,
-    );
-
-    const spy = jest.spyOn(Sound.prototype, 'componentDidCatch');
-
-    wrapper.find(UselessPlugin).simulateError(error);
-
-    expect(spy).toHaveBeenCalled();
-    expect(onErrorSpy).toHaveBeenCalled();
-  });
-
   test('should return true from shouldUpdatePosition for position=0', () => {
     const testRenderer = TestRenderer.create(
       <Sound url="http://foo.ogg" playStatus={Sound.status.PAUSED} position={42} />,
@@ -153,5 +128,32 @@ describe('Sound Component', () => {
         .get(0)
         .children.filter(({ name }: any) => name === 'source').length,
     ).toEqual(sources.length);
+  });
+
+  describe('error handling', () => {
+    test('should call onError props if an error is throw', () => {
+      const error = new Error('test error');
+      const UselessPlugin = () => null;
+      const props = {
+        url: 'http://foo.ogg',
+        playStatus: Sound.status.PAUSED,
+        onError: () => {},
+      };
+
+      const onErrorSpy = jest.spyOn(props, 'onError');
+
+      const wrapper = mount(
+        <Sound {...props}>
+          <UselessPlugin />
+        </Sound>,
+      );
+
+      const spy = jest.spyOn(Sound.prototype, 'componentDidCatch');
+
+      wrapper.find(UselessPlugin).simulateError(error);
+
+      expect(spy).toHaveBeenCalled();
+      expect(onErrorSpy).toHaveBeenCalled();
+    });
   });
 });

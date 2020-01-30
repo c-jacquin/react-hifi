@@ -8,21 +8,29 @@ enum SoundStatus {
   STOPPED = 'STOPPED',
 }
 
-type OnPlayingArgs = {
-  position: number;
-  duration: number;
-};
-
 const Destination = pluginFactory<{}, AudioDestinationNode>({
   createNode(audioContext: AudioContext) {
     return audioContext.destination;
   },
 });
 
+export enum SoundErrors {
+  MEDIA_ERR_ABORTED = 'Video playback aborted by the user.',
+  MEDIA_ERR_NETWORK = 'A network error caused the audio download to fail.',
+  MEDIA_ERR_DECODE = 'The audio playback was aborted due to a corruption problem.',
+  MEDIA_ERR_SRC_NOT_SUPPORTED = 'The audio playback can not be loaded, either because the server or network failed or because the format is not supported.',
+  UNKNOWN = 'An unknown error occurred during audio playback loading.',
+}
+
 interface Stream {
   type: string;
   url: string;
 }
+
+type OnPlayingArgs = {
+  position: number;
+  duration: number;
+};
 
 /**
  * Sound Props
@@ -61,7 +69,6 @@ export interface SoundState {
 export class Sound extends React.Component<SoundProps, SoundState> {
   private audio: HTMLAudioElement;
   private source: MediaElementAudioSourceNode;
-  private animationFrame: number;
 
   public state: SoundState = {
     audioContext: new AudioContext(),
@@ -187,7 +194,25 @@ export class Sound extends React.Component<SoundProps, SoundState> {
   }
 
   private handleError(evt: any) {
-    this.props.onError && this.props.onError(new Error('Audio error'));
+    let error: Error;
+    switch (evt.target.error.code) {
+      case evt.target.error.MEDIA_ERR_ABORTED:
+        error = new Error(SoundErrors.MEDIA_ERR_ABORTED);
+        break;
+      case evt.target.error.MEDIA_ERR_NETWORK:
+        error = new Error(SoundErrors.MEDIA_ERR_NETWORK);
+        break;
+      case evt.target.error.MEDIA_ERR_DECODE:
+        error = new Error(SoundErrors.MEDIA_ERR_DECODE);
+        break;
+      case evt.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+        error = new Error(SoundErrors.MEDIA_ERR_SRC_NOT_SUPPORTED);
+        break;
+      default:
+        error = new Error(SoundErrors.UNKNOWN);
+        break;
+    }
+    this.props.onError && this.props.onError(error);
   }
 
   componentDidUpdate(prevProps: SoundProps) {
